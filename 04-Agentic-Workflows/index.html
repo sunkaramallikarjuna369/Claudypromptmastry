@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 04: Agentic Workflows | DataEng Mastery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+    <script>tailwind.config={theme:{extend:{colors:{nebula:'#0a0a1a',cyan:'#00f5ff',purple:'#a855f7'}}}}</script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#0a0a1a;color:#e2e8f0;overflow-x:hidden}.font-mono{font-family:'JetBrains Mono',monospace}
+        .glass{background:rgba(15,23,42,0.6);backdrop-filter:blur(20px);border:1px solid rgba(0,245,255,0.15)}
+        .glass-strong{background:rgba(15,23,42,0.8);backdrop-filter:blur(30px);border:1px solid rgba(0,245,255,0.2)}
+        .neon-text{color:#00f5ff;text-shadow:0 0 10px #00f5ff44,0 0 40px #00f5ff22}
+        .neon-border{border-color:#00f5ff;box-shadow:0 0 15px #00f5ff22}
+        .glow-btn{background:linear-gradient(135deg,#00f5ff22,#a855f722);border:1px solid #00f5ff44;transition:all 0.3s}
+        .glow-btn:hover{background:linear-gradient(135deg,#00f5ff44,#a855f744);box-shadow:0 0 30px #00f5ff33;transform:translateY(-2px)}
+        .gradient-text{background:linear-gradient(135deg,#00f5ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .card-hover{transition:all 0.4s cubic-bezier(0.4,0,0.2,1)}.card-hover:hover{transform:translateY(-4px);box-shadow:0 15px 40px #00f5ff15;border-color:#00f5ff55}
+        .quiz-option{transition:all 0.3s;cursor:pointer}.quiz-option:hover{border-color:#00f5ff;background:rgba(0,245,255,0.05)}
+        .quiz-option.selected{border-color:#00f5ff;background:rgba(0,245,255,0.1)}
+        #stars-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+        .pipeline-step{transition:all 0.4s;cursor:pointer}.pipeline-step:hover{border-color:#00f5ff}
+        .pipeline-step.active{border-color:#00f5ff;background:rgba(0,245,255,0.1)}
+        .log-line{animation:fadeIn 0.3s ease-out}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+    </style>
+</head>
+<body class="min-h-screen">
+    <canvas id="stars-canvas"></canvas>
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-strong">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-14">
+            <div class="flex items-center gap-3">
+                <a href="../index.html" class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan to-purple flex items-center justify-center text-nebula font-bold text-sm">C4</div>
+                    <span class="text-sm font-bold neon-text hidden sm:inline">DataEng Mastery</span>
+                </a>
+                <span class="text-gray-600">/</span>
+                <span class="text-sm text-gray-300">Module 04</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="../03-API-Integration/index.html" class="text-sm text-gray-400 hover:text-cyan transition">&larr; Prev</a>
+                <a href="../05-Evaluation-Runbooks/runbook.html" class="glow-btn px-3 py-1.5 rounded-lg text-xs text-cyan">Next &rarr;</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="pt-24 pb-16 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-14 h-14 rounded-xl bg-cyan/20 flex items-center justify-center text-3xl">&#129302;</div>
+                <div>
+                    <div class="text-xs text-cyan font-mono mb-1">MODULE 04</div>
+                    <h1 class="text-3xl sm:text-4xl font-bold">Agentic Workflows</h1>
+                </div>
+            </div>
+            <p class="text-gray-400 text-lg max-w-3xl mb-8">Build autonomous data pipeline agents that plan, execute, validate, and iterate on multi-day engineering projects with Claude as the orchestrator.</p>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">Pipeline Builder</span></h2>
+            <div class="glass rounded-2xl p-6 neon-border">
+                <p class="text-sm text-gray-400 mb-4">Design your agentic pipeline by adding steps. The agent will execute them with Plan &rarr; Execute &rarr; Validate.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Step Name</label>
+                        <input id="step-name" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-cyan outline-none" placeholder="e.g. Extract from S3">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Tool</label>
+                        <select id="step-tool" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:border-cyan outline-none">
+                            <option value="execute_sql">execute_sql (BigQuery)</option>
+                            <option value="run_python">run_python (Pandas/Spark)</option>
+                            <option value="read_file">read_file (S3/GCS)</option>
+                            <option value="write_file">write_file (Output)</option>
+                            <option value="check_quality">check_quality (Validation)</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="addStep()" class="glow-btn px-6 py-2 rounded-lg text-sm text-cyan font-medium w-full">+ Add Step</button>
+                    </div>
+                </div>
+                <div id="pipeline-steps" class="space-y-3 mb-6"></div>
+                <div class="flex gap-3">
+                    <button onclick="runPipeline()" class="glow-btn px-6 py-2 rounded-lg text-sm text-cyan font-medium" id="run-pipeline-btn">&#9654; Run Pipeline Simulation</button>
+                    <button onclick="clearPipeline()" class="px-4 py-2 rounded-lg border border-gray-700 text-sm text-gray-400 hover:text-cyan transition">Clear</button>
+                    <button onclick="loadSamplePipeline()" class="px-4 py-2 rounded-lg border border-gray-700 text-sm text-gray-400 hover:text-cyan transition">Load Sample</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">Agent Execution Log</span></h2>
+            <div class="glass rounded-2xl p-6 neon-border">
+                <div id="agent-log" class="bg-gray-950 rounded-xl p-4 h-64 overflow-auto font-mono text-xs space-y-1">
+                    <div class="text-gray-500">Agent waiting for pipeline definition...</div>
+                </div>
+                <div class="flex items-center gap-4 mt-3 text-xs">
+                    <span class="text-gray-500">Status: <span id="agent-status" class="text-gray-400">Idle</span></span>
+                    <span class="text-gray-500">Steps: <span id="agent-step-count">0/0</span></span>
+                    <span class="text-gray-500">Errors: <span id="agent-errors" class="text-green-400">0</span></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">Agent Architecture</span></h2>
+            <div class="glass rounded-2xl p-6 neon-border">
+                <svg id="arch-diagram" width="100%" height="320" class="w-full"></svg>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">Module Quiz</span> <span class="text-sm text-gray-400 font-normal">(10 Questions)</span></h2>
+            <div class="glass rounded-2xl p-6 sm:p-8 neon-border">
+                <div id="quiz-container"></div>
+                <div class="flex items-center justify-between mt-6">
+                    <div class="text-sm text-gray-400">Question <span id="q-current">1</span> of 10</div>
+                    <div class="flex gap-3">
+                        <button id="prev-btn" onclick="prevQuestion()" class="px-4 py-2 rounded-lg border border-gray-700 text-sm text-gray-400 hidden">&larr; Prev</button>
+                        <button id="next-btn" onclick="nextQuestion()" class="glow-btn px-4 py-2 rounded-lg text-sm text-cyan font-medium">Next &rarr;</button>
+                    </div>
+                </div>
+                <div id="quiz-result" class="hidden mt-6 text-center">
+                    <div class="text-4xl mb-2" id="result-emoji"></div>
+                    <div class="text-2xl font-bold neon-text" id="result-score">0/10</div>
+                    <div class="text-gray-400 text-sm mt-1" id="result-msg"></div>
+                    <button onclick="retakeQuiz()" class="glow-btn px-6 py-2 rounded-lg text-sm text-cyan font-medium mt-4">Retake Quiz</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto flex justify-between">
+            <a href="../03-API-Integration/index.html" class="px-6 py-3 rounded-lg border border-gray-700 text-sm text-gray-400 hover:text-cyan transition">&larr; Module 03</a>
+            <a href="../05-Evaluation-Runbooks/runbook.html" class="glow-btn px-6 py-3 rounded-lg text-sm text-cyan font-medium">Module 05: Evaluation &rarr;</a>
+        </div>
+    </section>
+
+    <script>
+    (function(){const c=document.getElementById('stars-canvas'),x=c.getContext('2d');let s=[];function r(){c.width=window.innerWidth;c.height=window.innerHeight}function cr(){s=[];for(let i=0;i<150;i++)s.push({x:Math.random()*c.width,y:Math.random()*c.height,sz:Math.random()*1.5,sp:Math.random()*0.3+0.1,o:Math.random()})}function a(){x.clearRect(0,0,c.width,c.height);s.forEach(st=>{st.o+=(Math.random()-0.5)*0.02;st.o=Math.max(0.1,Math.min(1,st.o));st.y+=st.sp;if(st.y>c.height){st.y=0;st.x=Math.random()*c.width}x.beginPath();x.arc(st.x,st.y,st.sz,0,Math.PI*2);x.fillStyle=`rgba(0,245,255,${st.o*0.4})`;x.fill()});requestAnimationFrame(a)}r();cr();a();window.addEventListener('resize',()=>{r();cr()})})();
+
+    let steps = [];
+    const toolIcons = {execute_sql:'&#128202;',run_python:'&#128013;',read_file:'&#128196;',write_file:'&#128190;',check_quality:'&#9989;'};
+    const toolColors = {execute_sql:'text-blue-400',run_python:'text-green-400',read_file:'text-yellow-400',write_file:'text-orange-400',check_quality:'text-purple-400'};
+
+    function addStep() {
+        const name = document.getElementById('step-name').value.trim();
+        const tool = document.getElementById('step-tool').value;
+        if (!name) return;
+        steps.push({name,tool,status:'pending'});
+        document.getElementById('step-name').value = '';
+        renderSteps();
+    }
+    function removeStep(i) { steps.splice(i,1); renderSteps(); }
+    function renderSteps() {
+        const el = document.getElementById('pipeline-steps');
+        if (steps.length === 0) { el.innerHTML = '<div class="text-sm text-gray-500 text-center py-4">No steps added. Add steps above or load a sample pipeline.</div>'; return; }
+        el.innerHTML = steps.map((s,i) => `<div class="pipeline-step glass rounded-xl p-4 flex items-center gap-4 ${s.status==='running'?'active':''}" id="step-${i}">
+            <div class="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center text-lg">${toolIcons[s.tool]}</div>
+            <div class="flex-1">
+                <div class="font-medium text-sm">${s.name}</div>
+                <div class="text-xs ${toolColors[s.tool]}">${s.tool}</div>
+            </div>
+            <div class="text-xs ${s.status==='done'?'text-green-400':s.status==='running'?'neon-text':s.status==='error'?'text-red-400':'text-gray-500'}">${s.status==='done'?'Done':s.status==='running'?'Running...':s.status==='error'?'Error':''}</div>
+            ${s.status==='pending'?`<button onclick="removeStep(${i})" class="text-gray-600 hover:text-red-400 text-sm">&times;</button>`:''}
+        </div>`).join('');
+    }
+    function clearPipeline() { steps = []; renderSteps(); document.getElementById('agent-log').innerHTML = '<div class="text-gray-500">Agent waiting for pipeline definition...</div>'; }
+    function loadSamplePipeline() {
+        steps = [
+            {name:'Read customer data from S3',tool:'read_file',status:'pending'},
+            {name:'Profile data quality',tool:'run_python',status:'pending'},
+            {name:'Clean anomalies with Pandas',tool:'run_python',status:'pending'},
+            {name:'Query BigQuery dimensions',tool:'execute_sql',status:'pending'},
+            {name:'Transform and join datasets',tool:'run_python',status:'pending'},
+            {name:'Validate output quality',tool:'check_quality',status:'pending'},
+            {name:'Write to BigQuery',tool:'execute_sql',status:'pending'}
+        ];
+        renderSteps();
+    }
+    renderSteps();
+
+    function addLog(msg, type) {
+        const log = document.getElementById('agent-log');
+        const ts = new Date().toLocaleTimeString();
+        const colors = {info:'text-gray-300',plan:'text-blue-400',exec:'text-green-400',validate:'text-purple-400',error:'text-red-400',success:'text-cyan'};
+        log.innerHTML += `<div class="log-line ${colors[type]||'text-gray-400'}">[${ts}] ${msg}</div>`;
+        log.scrollTop = log.scrollHeight;
+    }
+
+    async function runPipeline() {
+        if (steps.length === 0) { addLog('No steps defined. Add steps first.','error'); return; }
+        document.getElementById('run-pipeline-btn').disabled = true;
+        document.getElementById('agent-log').innerHTML = '';
+        document.getElementById('agent-status').textContent = 'Running';
+        document.getElementById('agent-status').className = 'neon-text';
+        let errors = 0;
+        addLog('Agent initialized. Starting pipeline...','info');
+        addLog('PHASE 1: PLANNING','plan');
+        await delay(500);
+        for (let i = 0; i < steps.length; i++) {
+            addLog(`  Step ${i+1}: ${steps[i].name} [${steps[i].tool}]`,'plan');
+            await delay(200);
+        }
+        addLog(`Plan complete. ${steps.length} steps identified.`,'plan');
+        await delay(500);
+        addLog('PHASE 2: EXECUTION','exec');
+        for (let i = 0; i < steps.length; i++) {
+            steps[i].status = 'running';
+            renderSteps();
+            document.getElementById('agent-step-count').textContent = `${i+1}/${steps.length}`;
+            addLog(`Executing: ${steps[i].name}...`,'exec');
+            await delay(800 + Math.random()*700);
+            if (Math.random() < 0.1) {
+                addLog(`  ERROR in ${steps[i].name}: Timeout. Retrying...`,'error');
+                errors++;
+                await delay(600);
+                addLog(`  Retry successful.`,'exec');
+            }
+            addLog(`  Completed: ${steps[i].name}`,'exec');
+            steps[i].status = 'done';
+            renderSteps();
+        }
+        addLog('PHASE 3: VALIDATION','validate');
+        await delay(500);
+        addLog('  Row count check: PASSED (1,234,567 rows)','validate');
+        await delay(300);
+        addLog('  Null rate check: PASSED (< 0.1%)','validate');
+        await delay(300);
+        addLog('  Schema validation: PASSED','validate');
+        await delay(300);
+        addLog('  Business rules: PASSED (all thresholds met)','validate');
+        await delay(500);
+        addLog(`Pipeline completed successfully! ${steps.length} steps, ${errors} retries.`,'success');
+        document.getElementById('agent-status').textContent = 'Complete';
+        document.getElementById('agent-status').className = 'text-green-400';
+        document.getElementById('agent-errors').textContent = errors;
+        document.getElementById('run-pipeline-btn').disabled = false;
+    }
+    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    // Architecture Diagram
+    (function(){
+        const svg = d3.select('#arch-diagram');
+        const w = document.getElementById('arch-diagram').clientWidth;
+        const h = 320;
+        svg.attr('viewBox',`0 0 ${w} ${h}`);
+        const boxes = [
+            {label:'User\nRequest',x:w*0.08,y:h*0.5,w:80,h:50,color:'#f97316'},
+            {label:'Agent\nPlanner',x:w*0.28,y:h*0.25,w:80,h:50,color:'#3b82f6'},
+            {label:'Tool\nExecutor',x:w*0.28,y:h*0.75,w:80,h:50,color:'#22c55e'},
+            {label:'Claude 4.6\nOrchestrator',x:w*0.5,y:h*0.5,w:100,h:60,color:'#00f5ff'},
+            {label:'Validator',x:w*0.72,y:h*0.25,w:80,h:50,color:'#a855f7'},
+            {label:'Reporter',x:w*0.72,y:h*0.75,w:80,h:50,color:'#eab308'},
+            {label:'Output',x:w*0.92,y:h*0.5,w:70,h:50,color:'#22c55e'}
+        ];
+        const arrows = [[0,3],[3,1],[3,2],[1,3],[2,3],[3,4],[3,5],[4,6],[5,6]];
+        arrows.forEach(([f,t])=>{
+            svg.append('line').attr('x1',boxes[f].x).attr('y1',boxes[f].y).attr('x2',boxes[t].x).attr('y2',boxes[t].y)
+                .attr('stroke','#1e293b').attr('stroke-width',2).attr('marker-end','url(#arrowhead)');
+        });
+        svg.append('defs').append('marker').attr('id','arrowhead').attr('viewBox','0 0 10 10').attr('refX',10).attr('refY',5)
+            .attr('markerWidth',6).attr('markerHeight',6).attr('orient','auto')
+            .append('path').attr('d','M 0 0 L 10 5 L 0 10 z').attr('fill','#334155');
+        boxes.forEach(b=>{
+            const g = svg.append('g').attr('transform',`translate(${b.x},${b.y})`);
+            g.append('rect').attr('x',-b.w/2).attr('y',-b.h/2).attr('width',b.w).attr('height',b.h).attr('rx',10).attr('fill','#0f172a').attr('stroke',b.color).attr('stroke-width',2);
+            const lines = b.label.split('\n');
+            lines.forEach((l,i)=>{
+                g.append('text').attr('text-anchor','middle').attr('y',-6+(i*16)).attr('fill',b.color).attr('font-size','10').attr('font-family','Inter,sans-serif').text(l);
+            });
+        });
+    })();
+
+    // Quiz
+    const questions = [
+        {q:"What is the correct order in the agent workflow loop?",opts:["Execute > Validate > Plan","Plan > Execute > Validate","Validate > Plan > Execute","Execute > Plan > Validate"],ans:1},
+        {q:"Which tool would an agent use to run BigQuery SQL?",opts:["run_python","read_file","execute_sql","write_file"],ans:2},
+        {q:"What should an agent do when validation fails?",opts:["Stop immediately","Delete all output","Iterate: analyze failure, adjust plan, re-execute","Ignore the failure"],ans:2},
+        {q:"What is a multi-day agentic project?",opts:["A project that takes exactly 2 days","An autonomous workflow spanning multiple phases over days","A daily cron job","A one-shot prompt"],ans:1},
+        {q:"What is the 'self-correcting pipeline' pattern?",opts:["A pipeline that never fails","Agent analyzes errors, generates fixes, and retries","Manual error correction by humans","Ignoring errors and continuing"],ans:1},
+        {q:"Which phase comes first in the agent workflow?",opts:["Execute","Validate","Report","Plan"],ans:3},
+        {q:"What is checkpoint & resume pattern used for?",opts:["Saving game progress","Resuming interrupted pipelines from last good state","Caching API responses","Version controlling code"],ans:1},
+        {q:"How many maximum retries should a self-correcting agent attempt?",opts:["Unlimited","1","3","10"],ans:2},
+        {q:"What tool checks data quality in the agent framework?",opts:["execute_sql","run_python","check_quality","write_file"],ans:2},
+        {q:"What makes agentic workflows different from single-shot prompts?",opts:["They use more tokens","They are autonomous multi-step processes with tool use","They require no API key","They only work with GPT models"],ans:1}
+    ];
+    let currentQ=0,answers=new Array(10).fill(-1),submitted=false;
+    function renderQuiz(){if(submitted)return;const q=questions[currentQ];document.getElementById('q-current').textContent=currentQ+1;let h=`<div class="mb-4"><div class="text-lg font-semibold mb-4">${currentQ+1}. ${q.q}</div><div class="space-y-3">`;q.opts.forEach((o,i)=>{const s=answers[currentQ]===i?'selected':'';h+=`<div class="quiz-option glass rounded-xl p-4 ${s}" onclick="selectAnswer(${i})"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center text-sm font-mono ${s?'border-cyan text-cyan':'text-gray-400'}">${String.fromCharCode(65+i)}</div><span class="text-sm">${o}</span></div></div>`});h+='</div></div>';document.getElementById('quiz-container').innerHTML=h;document.getElementById('prev-btn').classList.toggle('hidden',currentQ===0);document.getElementById('next-btn').textContent=currentQ===9?'Submit':'Next \u2192'}
+    function selectAnswer(i){answers[currentQ]=i;renderQuiz()}
+    function nextQuestion(){if(currentQ===9){submitQuiz();return}currentQ++;renderQuiz()}
+    function prevQuestion(){if(currentQ>0){currentQ--;renderQuiz()}}
+    function submitQuiz(){submitted=true;let c=0;questions.forEach((q,i)=>{if(answers[i]===q.ans)c++});const p=JSON.parse(localStorage.getItem('claude-mastery-progress')||'{}');p.module4={correct:c,total:10};localStorage.setItem('claude-mastery-progress',JSON.stringify(p));document.getElementById('quiz-container').classList.add('hidden');document.getElementById('prev-btn').classList.add('hidden');document.getElementById('next-btn').classList.add('hidden');document.getElementById('q-current').parentElement.classList.add('hidden');document.getElementById('quiz-result').classList.remove('hidden');document.getElementById('result-score').textContent=`${c}/10`;if(c>=8){document.getElementById('result-emoji').textContent='\u{1F3C6}';document.getElementById('result-msg').textContent='Agentic workflow master!'}else if(c>=5){document.getElementById('result-emoji').textContent='\u{1F44D}';document.getElementById('result-msg').textContent='Good progress! Try running the pipeline simulator.'}else{document.getElementById('result-emoji').textContent='\u{1F4DA}';document.getElementById('result-msg').textContent='Review the architecture diagram above.'}}
+    function retakeQuiz(){submitted=false;currentQ=0;answers=new Array(10).fill(-1);document.getElementById('quiz-container').classList.remove('hidden');document.getElementById('prev-btn').classList.remove('hidden');document.getElementById('next-btn').classList.remove('hidden');document.getElementById('q-current').parentElement.classList.remove('hidden');document.getElementById('quiz-result').classList.add('hidden');renderQuiz()}
+    renderQuiz();
+    </script>
+</body>
+</html>

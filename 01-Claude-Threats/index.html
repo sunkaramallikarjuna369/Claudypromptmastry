@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 01: Claude Threats | DataEng Mastery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+    <script>tailwind.config={theme:{extend:{colors:{nebula:'#0a0a1a',cyan:'#00f5ff',purple:'#a855f7'}}}}</script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#0a0a1a;color:#e2e8f0;overflow-x:hidden}.font-mono{font-family:'JetBrains Mono',monospace}
+        .glass{background:rgba(15,23,42,0.6);backdrop-filter:blur(20px);border:1px solid rgba(0,245,255,0.15)}
+        .glass-strong{background:rgba(15,23,42,0.8);backdrop-filter:blur(30px);border:1px solid rgba(0,245,255,0.2)}
+        .neon-text{color:#00f5ff;text-shadow:0 0 10px #00f5ff44}
+        .neon-border{border-color:#00f5ff;box-shadow:0 0 15px #00f5ff22}
+        .glow-btn{background:linear-gradient(135deg,#00f5ff22,#a855f722);border:1px solid #00f5ff44;transition:all 0.3s}
+        .glow-btn:hover{background:linear-gradient(135deg,#00f5ff44,#a855f744);box-shadow:0 0 30px #00f5ff33;transform:translateY(-2px)}
+        .gradient-text{background:linear-gradient(135deg,#00f5ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .card-hover{transition:all 0.4s}.card-hover:hover{transform:translateY(-4px);box-shadow:0 15px 40px #00f5ff15;border-color:#00f5ff55}
+        .CodeMirror{height:auto;min-height:200px;border-radius:0.75rem;font-size:13px}
+        .quiz-option{transition:all 0.3s;cursor:pointer}.quiz-option:hover{border-color:#00f5ff;background:rgba(0,245,255,0.05)}
+        .quiz-option.selected{border-color:#00f5ff;background:rgba(0,245,255,0.1)}
+        #stars-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+    </style>
+</head>
+<body class="min-h-screen">
+    <canvas id="stars-canvas"></canvas>
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-strong">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-14">
+            <div class="flex items-center gap-3">
+                <a href="../index.html" class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan to-purple flex items-center justify-center text-nebula font-bold text-sm">C4</div>
+                    <span class="text-sm font-bold neon-text hidden sm:inline">DataEng Mastery</span>
+                </a>
+                <span class="text-gray-600">/</span>
+                <span class="text-sm text-gray-300">Module 01</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="../index.html" class="text-sm text-gray-400 hover:text-cyan transition">Home</a>
+                <a href="../02-Prompt-Engineering/index.html" class="glow-btn px-3 py-1.5 rounded-lg text-xs text-cyan">Next &rarr;</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="pt-24 pb-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-14 h-14 rounded-xl bg-red-500/20 flex items-center justify-center text-3xl">&#128293;</div>
+                <div>
+                    <div class="text-xs text-cyan font-mono mb-1">MODULE 01</div>
+                    <h1 class="text-3xl sm:text-4xl font-bold">Claude 4.6 Threats</h1>
+                </div>
+            </div>
+            <p class="text-gray-400 text-lg max-w-3xl mb-8">Understand how Claude Opus 4.6 transforms data engineering - ETL automation, data cleaning, infrastructure generation, and agentic workflows.</p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="glass rounded-xl p-4 text-center"><div class="text-xl font-bold neon-text">4</div><div class="text-xs text-gray-400">Threat Areas</div></div>
+                <div class="glass rounded-xl p-4 text-center"><div class="text-xl font-bold neon-text">12</div><div class="text-xs text-gray-400">Key Prompts</div></div>
+                <div class="glass rounded-xl p-4 text-center"><div class="text-xl font-bold neon-text">10</div><div class="text-xs text-gray-400">Quiz Questions</div></div>
+                <div class="glass rounded-xl p-4 text-center"><div class="text-xl font-bold neon-text">2-3h</div><div class="text-xs text-gray-400">Duration</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-8"><span class="gradient-text">Threat Matrix</span></h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass rounded-2xl p-6 card-hover" id="t-etl">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center text-xl">&#9881;</div>
+                        <div><div class="font-bold">ETL Automation</div><div class="text-xs text-orange-400">Spark / Pandas</div></div>
+                        <div class="ml-auto bg-red-500/20 text-red-400 text-xs px-2 py-1 rounded-full">HIGH</div>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-3">Claude generates complete ETL pipelines - PySpark jobs, Pandas transformations, schema inference, and partition optimization.</p>
+                    <div class="flex gap-2 flex-wrap"><span class="text-xs bg-orange-500/10 text-orange-300 px-2 py-1 rounded">PySpark</span><span class="text-xs bg-orange-500/10 text-orange-300 px-2 py-1 rounded">Pandas</span><span class="text-xs bg-orange-500/10 text-orange-300 px-2 py-1 rounded">Schema</span><span class="text-xs bg-orange-500/10 text-orange-300 px-2 py-1 rounded">Partitioning</span></div>
+                </div>
+                <div class="glass rounded-2xl p-6 card-hover" id="t-clean">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-xl">&#129529;</div>
+                        <div><div class="font-bold">Data Cleaning</div><div class="text-xs text-blue-400">Anomaly Detection</div></div>
+                        <div class="ml-auto bg-red-500/20 text-red-400 text-xs px-2 py-1 rounded-full">HIGH</div>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-3">Automatic anomaly detection, null handling strategies, outlier removal with IQR/Z-score, and data quality rule generation.</p>
+                    <div class="flex gap-2 flex-wrap"><span class="text-xs bg-blue-500/10 text-blue-300 px-2 py-1 rounded">IQR</span><span class="text-xs bg-blue-500/10 text-blue-300 px-2 py-1 rounded">Z-Score</span><span class="text-xs bg-blue-500/10 text-blue-300 px-2 py-1 rounded">Null Strategy</span><span class="text-xs bg-blue-500/10 text-blue-300 px-2 py-1 rounded">Profiling</span></div>
+                </div>
+                <div class="glass rounded-2xl p-6 card-hover" id="t-infra">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center text-xl">&#127959;</div>
+                        <div><div class="font-bold">Infrastructure Code</div><div class="text-xs text-green-400">Terraform / BigQuery</div></div>
+                        <div class="ml-auto bg-yellow-500/20 text-yellow-400 text-xs px-2 py-1 rounded-full">MEDIUM</div>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-3">Generate Terraform modules, BigQuery schemas, IAM policies, and Cloud Composer DAGs from natural language requirements.</p>
+                    <div class="flex gap-2 flex-wrap"><span class="text-xs bg-green-500/10 text-green-300 px-2 py-1 rounded">Terraform</span><span class="text-xs bg-green-500/10 text-green-300 px-2 py-1 rounded">BigQuery</span><span class="text-xs bg-green-500/10 text-green-300 px-2 py-1 rounded">IAM</span><span class="text-xs bg-green-500/10 text-green-300 px-2 py-1 rounded">Airflow</span></div>
+                </div>
+                <div class="glass rounded-2xl p-6 card-hover" id="t-agent">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center text-xl">&#129302;</div>
+                        <div><div class="font-bold">Agentic Workflows</div><div class="text-xs text-purple-400">Multi-Day Projects</div></div>
+                        <div class="ml-auto bg-red-500/20 text-red-400 text-xs px-2 py-1 rounded-full">VERY HIGH</div>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-3">Autonomous multi-step, multi-day project execution with tool use - SQL execution, file ops, API calls, and self-correction.</p>
+                    <div class="flex gap-2 flex-wrap"><span class="text-xs bg-purple-500/10 text-purple-300 px-2 py-1 rounded">Tool Use</span><span class="text-xs bg-purple-500/10 text-purple-300 px-2 py-1 rounded">Planning</span><span class="text-xs bg-purple-500/10 text-purple-300 px-2 py-1 rounded">Validation</span><span class="text-xs bg-purple-500/10 text-purple-300 px-2 py-1 rounded">Iteration</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">ETL Pipeline Animation</span></h2>
+            <div class="glass rounded-2xl p-6 neon-border">
+                <svg id="etl-anim" width="100%" height="250" class="w-full"></svg>
+                <div class="flex justify-center gap-4 mt-4">
+                    <button onclick="runETL()" class="glow-btn px-6 py-2 rounded-lg text-sm text-cyan font-medium">&#9654; Run Pipeline</button>
+                    <button onclick="resetETL()" class="px-6 py-2 rounded-lg border border-gray-700 text-sm text-gray-400 hover:text-cyan transition">&#8635; Reset</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">Try It: ETL Prompt</span></h2>
+            <div class="glass rounded-2xl p-6 neon-border">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-sm text-gray-400">Copy & paste into Claude</span>
+                    <button onclick="copyPrompt()" class="text-sm text-gray-400 hover:text-cyan transition" id="copy-btn">Copy</button>
+                </div>
+                <textarea id="prompt-editor">You are a senior data engineer. Generate a complete PySpark ETL pipeline.
+
+SOURCE: S3 bucket (s3://raw-events/2024/), Parquet, partitioned by date, ~50GB daily
+TRANSFORMS:
+1. Deduplicate on event_id
+2. Parse nested JSON in 'metadata' column
+3. Join with dim_customers (BigQuery)
+4. Calculate rolling 7-day aggregates
+5. Apply SCD Type 2 for customer dimensions
+SINK: BigQuery analytics.fact_events, partitioned by event_date, clustered by customer_id
+REQUIREMENTS: Error handling, logging, data quality checks, unit tests</textarea>
+                <button onclick="simulateResponse()" class="glow-btn px-6 py-2 rounded-lg text-sm text-cyan font-medium mt-3">&#129302; Simulate Claude Response</button>
+                <div id="mock-response" class="mt-4 hidden">
+                    <div class="text-sm text-gray-400 mb-2">Mock Claude Response:</div>
+                    <div class="bg-gray-950 rounded-xl p-4 font-mono text-xs text-green-400 overflow-auto max-h-80" id="resp-out"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">Module Quiz</span> <span class="text-sm text-gray-400 font-normal">(10 Questions)</span></h2>
+            <div class="glass rounded-2xl p-6 sm:p-8 neon-border">
+                <div id="quiz-box"></div>
+                <div class="flex items-center justify-between mt-6">
+                    <div class="text-sm text-gray-400">Question <span id="q-num">1</span>/10</div>
+                    <div class="flex gap-3">
+                        <button id="prev-btn" onclick="prevQ()" class="px-4 py-2 rounded-lg border border-gray-700 text-sm text-gray-400 hidden">&larr; Prev</button>
+                        <button id="next-btn" onclick="nextQ()" class="glow-btn px-4 py-2 rounded-lg text-sm text-cyan">Next &rarr;</button>
+                    </div>
+                </div>
+                <div id="quiz-result" class="hidden mt-6 text-center">
+                    <div class="text-4xl mb-2" id="res-emoji"></div>
+                    <div class="text-2xl font-bold neon-text" id="res-score">0/10</div>
+                    <div class="text-gray-400 text-sm mt-1" id="res-msg"></div>
+                    <button onclick="retake()" class="glow-btn px-6 py-2 rounded-lg text-sm text-cyan mt-4">Retake</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto flex justify-between">
+            <a href="../index.html" class="px-6 py-3 rounded-lg border border-gray-700 text-sm text-gray-400 hover:text-cyan transition">&larr; Home</a>
+            <a href="../02-Prompt-Engineering/index.html" class="glow-btn px-6 py-3 rounded-lg text-sm text-cyan font-medium">Module 02: Prompt Engineering &rarr;</a>
+        </div>
+    </section>
+
+    <script>
+    // Stars
+    (function(){const c=document.getElementById('stars-canvas'),x=c.getContext('2d');let s=[];function r(){c.width=innerWidth;c.height=innerHeight}function mk(){s=[];for(let i=0;i<150;i++)s.push({x:Math.random()*c.width,y:Math.random()*c.height,sz:Math.random()*1.5,sp:Math.random()*0.3+0.1,o:Math.random()})}function draw(){x.clearRect(0,0,c.width,c.height);s.forEach(p=>{p.o+=(Math.random()-0.5)*0.02;p.o=Math.max(0.1,Math.min(1,p.o));p.y+=p.sp;if(p.y>c.height){p.y=0;p.x=Math.random()*c.width}x.beginPath();x.arc(p.x,p.y,p.sz,0,Math.PI*2);x.fillStyle=`rgba(0,245,255,${p.o*0.4})`;x.fill()});requestAnimationFrame(draw)}r();mk();draw();addEventListener('resize',()=>{r();mk()})})();
+
+    // ETL Animation
+    (function(){
+        const svg=d3.select('#etl-anim'),el=document.getElementById('etl-anim'),w=el.clientWidth,h=250;
+        svg.attr('viewBox',`0 0 ${w} ${h}`);
+        const nodes=[
+            {id:'src',label:'Source',x:w*0.08,y:h/2,c:'#f97316'},
+            {id:'ext',label:'Extract',x:w*0.25,y:h/2,c:'#eab308'},
+            {id:'cln',label:'Clean',x:w*0.42,y:h/2,c:'#00f5ff'},
+            {id:'trn',label:'Transform',x:w*0.59,y:h/2,c:'#a855f7'},
+            {id:'val',label:'Validate',x:w*0.76,y:h/2,c:'#22c55e'},
+            {id:'lod',label:'Load',x:w*0.93,y:h/2,c:'#3b82f6'}
+        ];
+        const edges=[[0,1],[1,2],[2,3],[3,4],[4,5]];
+        edges.forEach(([a,b])=>{
+            svg.append('line').attr('x1',nodes[a].x).attr('y1',nodes[a].y).attr('x2',nodes[b].x).attr('y2',nodes[b].y).attr('stroke','#1e293b').attr('stroke-width',3).attr('class','pipe');
+            svg.append('line').attr('x1',nodes[a].x).attr('y1',nodes[a].y).attr('x2',nodes[a].x).attr('y2',nodes[a].y).attr('stroke',nodes[a].c).attr('stroke-width',3).attr('class','flow').attr('data-tx',nodes[b].x).attr('data-ty',nodes[b].y);
+        });
+        nodes.forEach(n=>{
+            const g=svg.append('g').attr('transform',`translate(${n.x},${n.y})`).attr('class','node-g');
+            g.append('circle').attr('r',25).attr('fill','#0f172a').attr('stroke',n.c).attr('stroke-width',2);
+            g.append('text').attr('text-anchor','middle').attr('y',4).attr('fill','#e2e8f0').attr('font-size','10').attr('font-family','Inter').text(n.label);
+        });
+        window.runETL=function(){
+            svg.selectAll('.flow').each(function(d,i){
+                const l=d3.select(this);
+                gsap.to(this,{attr:{x2:+l.attr('data-tx'),y2:+l.attr('data-ty')},duration:0.5,delay:i*0.4,ease:'power2.inOut'});
+            });
+            svg.selectAll('.node-g').each(function(d,i){
+                gsap.fromTo(this,{scale:1},{scale:1.15,duration:0.25,delay:i*0.4,yoyo:true,repeat:1});
+            });
+        };
+        window.resetETL=function(){
+            svg.selectAll('.flow').each(function(){const l=d3.select(this);gsap.set(this,{attr:{x2:l.attr('x1'),y2:l.attr('y1')}});});
+        };
+    })();
+
+    // CodeMirror
+    let editor;
+    addEventListener('load',()=>{editor=CodeMirror.fromTextArea(document.getElementById('prompt-editor'),{mode:'python',theme:'dracula',lineNumbers:true,lineWrapping:true})});
+    function copyPrompt(){const t=editor?editor.getValue():document.getElementById('prompt-editor').value;navigator.clipboard.writeText(t);document.getElementById('copy-btn').textContent='Copied!';setTimeout(()=>document.getElementById('copy-btn').textContent='Copy',2000)}
+    function simulateResponse(){
+        document.getElementById('mock-response').classList.remove('hidden');
+        const out=document.getElementById('resp-out');out.textContent='';
+        const code=`from pyspark.sql import SparkSession, functions as F
+from pyspark.sql.window import Window
+import logging
+
+logger = logging.getLogger(__name__)
+
+def create_pipeline():
+    spark = SparkSession.builder \\
+        .appName("ETL_Events") \\
+        .config("spark.sql.adaptive.enabled", "true") \\
+        .getOrCreate()
+
+    # Extract
+    df = spark.read.parquet("s3://raw-events/2024/")
+    logger.info(f"Extracted {df.count()} rows")
+
+    # Deduplicate
+    w = Window.partitionBy("event_id").orderBy(F.desc("event_timestamp"))
+    df = df.withColumn("rn", F.row_number().over(w)).filter("rn = 1").drop("rn")
+
+    # Parse JSON metadata
+    df = df.withColumn("meta", F.from_json("metadata", "struct<key:string,val:string>"))
+
+    # Rolling 7-day aggregates
+    w7 = Window.partitionBy("customer_id").orderBy(F.col("event_date").cast("long")).rangeBetween(-6*86400, 0)
+    df = df.withColumn("rolling_7d", F.count("event_id").over(w7))
+
+    # Quality checks
+    assert df.count() > 0, "Empty dataset"
+    null_rate = df.filter(F.col("customer_id").isNull()).count() / df.count()
+    assert null_rate < 0.05, f"High null rate: {null_rate}"
+
+    # Load to BigQuery
+    df.write.format("bigquery") \\
+        .option("table", "analytics.fact_events") \\
+        .option("partitionField", "event_date") \\
+        .mode("overwrite").save()
+    logger.info("Pipeline complete")
+
+if __name__ == "__main__":
+    create_pipeline()`;
+        let i=0;(function t(){if(i<code.length){out.textContent+=code[i++];out.scrollTop=out.scrollHeight;setTimeout(t,2)}})();
+    }
+
+    // Quiz
+    const qs=[
+        {q:"What is Claude 4.6's maximum context window?",o:["100K tokens","500K tokens","1M tokens","2M tokens"],a:2},
+        {q:"Which method uses interquartile range for outlier detection?",o:["Z-Score","IQR Method","K-Means","DBSCAN"],a:1},
+        {q:"What does ETL stand for?",o:["Extract Transform Load","Enable Transfer Log","Execute Test Launch","Evaluate Track Learn"],a:0},
+        {q:"Which GCP service is used for serverless data warehousing?",o:["Cloud SQL","BigQuery","Datastore","Bigtable"],a:1},
+        {q:"What IaC tool does Claude generate for GCP?",o:["Pulumi","CloudFormation","Terraform","Ansible"],a:2},
+        {q:"In agentic workflows, what is the correct order?",o:["Execute > Plan > Validate","Plan > Validate > Execute","Plan > Execute > Validate","Validate > Plan > Execute"],a:2},
+        {q:"Which Python library is used for large-scale data processing?",o:["Flask","PySpark","Django","FastAPI"],a:1},
+        {q:"SCD Type 2 in ETL refers to?",o:["Overwrite records","Track historical changes with versioning","Delete old records","Merge duplicates"],a:1},
+        {q:"What is the benefit of Claude's tool calling?",o:["Faster text","Execute external actions (SQL, APIs, files)","Less tokens","Better grammar"],a:1},
+        {q:"Best partitioning for time-series data in BigQuery?",o:["Hash","Range","Time-based","None"],a:2}
+    ];
+    let cur=0,ans=Array(10).fill(-1),done=false;
+    function render(){if(done)return;const q=qs[cur];document.getElementById('q-num').textContent=cur+1;let h=`<div class="mb-4"><div class="text-lg font-semibold mb-4">${cur+1}. ${q.q}</div><div class="space-y-3">`;q.o.forEach((o,i)=>{const s=ans[cur]===i?'selected':'';h+=`<div class="quiz-option glass rounded-xl p-4 ${s}" onclick="pick(${i})"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center text-sm font-mono ${s?'border-cyan text-cyan':'text-gray-400'}">${String.fromCharCode(65+i)}</div><span class="text-sm">${o}</span></div></div>`});h+='</div></div>';document.getElementById('quiz-box').innerHTML=h;document.getElementById('prev-btn').classList.toggle('hidden',cur===0);document.getElementById('next-btn').textContent=cur===9?'Submit':'Next \u2192'}
+    function pick(i){ans[cur]=i;render()}
+    function nextQ(){if(cur===9){submit();return}cur++;render()}
+    function prevQ(){if(cur>0){cur--;render()}}
+    function submit(){done=true;let c=0;qs.forEach((q,i)=>{if(ans[i]===q.a)c++});const p=JSON.parse(localStorage.getItem('claude-mastery-progress')||'{}');p.module1={correct:c,total:10};localStorage.setItem('claude-mastery-progress',JSON.stringify(p));document.getElementById('quiz-box').classList.add('hidden');document.getElementById('prev-btn').classList.add('hidden');document.getElementById('next-btn').classList.add('hidden');document.getElementById('q-num').parentElement.classList.add('hidden');document.getElementById('quiz-result').classList.remove('hidden');document.getElementById('res-score').textContent=`${c}/10`;document.getElementById('res-emoji').textContent=c>=8?'\u{1F3C6}':c>=5?'\u{1F44D}':'\u{1F4DA}';document.getElementById('res-msg').textContent=c>=8?'Excellent!':c>=5?'Good job!':'Keep studying!'}
+    function retake(){done=false;cur=0;ans=Array(10).fill(-1);document.getElementById('quiz-box').classList.remove('hidden');document.getElementById('prev-btn').classList.remove('hidden');document.getElementById('next-btn').classList.remove('hidden');document.getElementById('q-num').parentElement.classList.remove('hidden');document.getElementById('quiz-result').classList.add('hidden');render()}
+    render();
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.from('.card-hover',{opacity:0,y:30,duration:0.5,stagger:0.15,scrollTrigger:{trigger:'.card-hover',start:'top 85%'}});
+    </script>
+</body>
+</html>

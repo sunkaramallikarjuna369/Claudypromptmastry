@@ -1,0 +1,23 @@
+{
+  "name": "claudeopus46-dataeng-mastery",
+  "version": "1.0.0",
+  "description": "Master Claude Opus 4.6 for Data Engineering - Interactive Learning Platform",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  },
+  "keywords": [
+    "claude",
+    "data-engineering",
+    "prompt-engineering",
+    "etl",
+    "bigquery",
+    "ai"
+  ],
+  "license": "MIT"
+}

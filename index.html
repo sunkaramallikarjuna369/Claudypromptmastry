@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClaudeOpus46 Data Engineering Mastery</title>
+    <meta name="description" content="Master Claude Opus 4.6 for Data Engineering - Interactive Learning Platform">
+    <link rel="manifest" href="data:application/json,%7B%22name%22%3A%22ClaudeOpus46%20DataEng%20Mastery%22%2C%22short_name%22%3A%22DataEng%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a0a1a%22%2C%22theme_color%22%3A%22%2300f5ff%22%7D">
+    <meta name="theme-color" content="#00f5ff">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        nebula: '#0a0a1a',
+                        cyan: '#00f5ff',
+                        'cyan-dim': '#00f5ff33',
+                        'cyan-glow': '#00f5ff66',
+                        purple: '#a855f7',
+                        'deep-blue': '#0f172a'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a1a;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 245, 255, 0.15);
+        }
+        .glass-strong {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(0, 245, 255, 0.2);
+        }
+        .neon-text {
+            color: #00f5ff;
+            text-shadow: 0 0 10px #00f5ff44, 0 0 40px #00f5ff22;
+        }
+        .neon-border {
+            border-color: #00f5ff;
+            box-shadow: 0 0 15px #00f5ff22, inset 0 0 15px #00f5ff11;
+        }
+        .glow-btn {
+            background: linear-gradient(135deg, #00f5ff22, #a855f722);
+            border: 1px solid #00f5ff44;
+            transition: all 0.3s ease;
+        }
+        .glow-btn:hover {
+            background: linear-gradient(135deg, #00f5ff44, #a855f744);
+            box-shadow: 0 0 30px #00f5ff33;
+            transform: translateY(-2px);
+        }
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 60px #00f5ff15;
+            border-color: #00f5ff55;
+        }
+        #stars-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        .progress-ring circle {
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .module-line {
+            position: relative;
+        }
+        .module-line::before {
+            content: '';
+            position: absolute;
+            left: 24px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #00f5ff44, transparent);
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px #00f5ff22; }
+            50% { box-shadow: 0 0 40px #00f5ff44; }
+        }
+        .pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .float-anim { animation: float 6s ease-in-out infinite; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .gradient-text {
+            background: linear-gradient(135deg, #00f5ff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .etl-node {
+            fill: #0f172a;
+            stroke: #00f5ff;
+            stroke-width: 2;
+        }
+        .etl-link {
+            stroke: #00f5ff44;
+            stroke-width: 2;
+            fill: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <canvas id="stars-canvas"></canvas>
+
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-strong">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan to-purple flex items-center justify-center text-nebula font-bold text-lg">C4</div>
+                    <div>
+                        <div class="text-sm font-bold neon-text">ClaudeOpus 4.6</div>
+                        <div class="text-xs text-gray-400">DataEng Mastery</div>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="#modules" class="text-sm text-gray-300 hover:text-cyan transition">Modules</a>
+                    <a href="#path" class="text-sm text-gray-300 hover:text-cyan transition">7-Day Path</a>
+                    <a href="#progress" class="text-sm text-gray-300 hover:text-cyan transition">Progress</a>
+                    <a href="./runbook.md" class="glow-btn px-4 py-2 rounded-lg text-sm font-medium text-cyan">Runbook</a>
+                </div>
+                <button id="mobile-menu-btn" class="md:hidden text-cyan">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="md:hidden hidden glass px-4 pb-4">
+            <a href="#modules" class="block py-2 text-sm text-gray-300 hover:text-cyan">Modules</a>
+            <a href="#path" class="block py-2 text-sm text-gray-300 hover:text-cyan">7-Day Path</a>
+            <a href="#progress" class="block py-2 text-sm text-gray-300 hover:text-cyan">Progress</a>
+            <a href="./runbook.md" class="block py-2 text-sm text-cyan font-medium">Runbook</a>
+        </div>
+    </nav>
+
+    <section class="relative min-h-screen flex items-center justify-center pt-16 px-4">
+        <div class="max-w-6xl mx-auto text-center relative z-10">
+            <div id="hero-badge" class="inline-flex items-center gap-2 glass px-4 py-2 rounded-full mb-8 opacity-0">
+                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                <span class="text-sm text-gray-300">Claude Opus 4.6 Ready</span>
+                <span class="text-xs bg-cyan/20 text-cyan px-2 py-0.5 rounded-full">NEW</span>
+            </div>
+            <h1 id="hero-title" class="text-4xl sm:text-6xl lg:text-8xl font-black mb-6 opacity-0">
+                <span class="gradient-text">Data Engineering</span><br>
+                <span class="text-white">Mastery</span>
+            </h1>
+            <p id="hero-sub" class="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto mb-8 opacity-0">
+                Master Claude Opus 4.6 for production data pipelines. From ETL automation to agentic workflows — learn by building real-world systems.
+            </p>
+            <div id="hero-btns" class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 opacity-0">
+                <a href="#modules" class="glow-btn px-8 py-4 rounded-xl text-cyan font-semibold text-lg flex items-center gap-2">
+                    <span>Start Learning</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                </a>
+                <a href="#etl-demo" class="px-8 py-4 rounded-xl border border-gray-700 text-gray-300 font-medium text-lg hover:border-cyan/50 transition">
+                    View ETL Demo
+                </a>
+            </div>
+            <div id="hero-stats" class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto opacity-0">
+                <div class="glass rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold neon-text" id="stat-modules">5</div>
+                    <div class="text-xs text-gray-400">Modules</div>
+                </div>
+                <div class="glass rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold neon-text" id="stat-prompts">50+</div>
+                    <div class="text-xs text-gray-400">Prompts</div>
+                </div>
+                <div class="glass rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold neon-text" id="stat-quizzes">50</div>
+                    <div class="text-xs text-gray-400">Quiz Questions</div>
+                </div>
+                <div class="glass rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold neon-text" id="stat-days">7</div>
+                    <div class="text-xs text-gray-400">Day Path</div>
+                </div>
+            </div>
+        </div>
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-10">
+            <svg class="w-6 h-6 text-cyan/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+        </div>
+    </section>
+
+    <section id="etl-demo" class="py-20 px-4 relative z-10">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+                    <span class="gradient-text">ETL Pipeline Flow</span>
+                </h2>
+                <p class="text-gray-400">Interactive visualization of Claude-powered data pipelines</p>
+            </div>
+            <div class="glass rounded-2xl p-6 sm:p-8 neon-border pulse-glow">
+                <svg id="etl-flow" width="100%" height="350" class="w-full"></svg>
+            </div>
+        </div>
+    </section>
+
+    <section id="modules" class="py-20 px-4 relative z-10">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-5xl font-bold mb-4">
+                    <span class="gradient-text">Learning Modules</span>
+                </h2>
+                <p class="text-gray-400 text-lg">5 comprehensive modules from fundamentals to production</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <a href="./01-Claude-Threats/index.html" class="glass rounded-2xl p-6 card-hover group block">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center text-2xl">&#128293;</div>
+                        <div>
+                            <div class="text-xs text-cyan font-mono">MODULE 01</div>
+                            <div class="font-bold text-lg">Claude Threats</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Understand Claude 4.6's data engineering capabilities — ETL automation, anomaly detection, Terraform generation, and agentic workflows.</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded-full">Spark</span>
+                            <span class="text-xs bg-orange-500/20 text-orange-400 px-2 py-1 rounded-full">Pandas</span>
+                        </div>
+                        <span class="text-cyan text-sm group-hover:translate-x-1 transition-transform">&rarr;</span>
+                    </div>
+                    <div class="mt-4 bg-gray-800/50 rounded-full h-2 overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-red-500 to-orange-500 rounded-full module-progress" data-module="1" style="width: 0%"></div>
+                    </div>
+                </a>
+
+                <a href="./02-Prompt-Engineering/index.html" class="glass rounded-2xl p-6 card-hover group block">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-2xl">&#129504;</div>
+                        <div>
+                            <div class="text-xs text-cyan font-mono">MODULE 02</div>
+                            <div class="font-bold text-lg">Prompt Engineering</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Master advanced prompting — Explicit Spec with JSON schemas, Adaptive Chain-of-Thought, parallel tool calling, and metacognitive self-review.</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded-full">CoT</span>
+                            <span class="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full">JSON</span>
+                        </div>
+                        <span class="text-cyan text-sm group-hover:translate-x-1 transition-transform">&rarr;</span>
+                    </div>
+                    <div class="mt-4 bg-gray-800/50 rounded-full h-2 overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full module-progress" data-module="2" style="width: 0%"></div>
+                    </div>
+                </a>
+
+                <a href="./03-API-Integration/index.html" class="glass rounded-2xl p-6 card-hover group block">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center text-2xl">&#9889;</div>
+                        <div>
+                            <div class="text-xs text-cyan font-mono">MODULE 03</div>
+                            <div class="font-bold text-lg">API Integration</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Connect to Claude via Anthropic API, AWS Bedrock, and Google Vertex AI. Build real API calls with Python and handle responses.</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full">API</span>
+                            <span class="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full">GCP</span>
+                        </div>
+                        <span class="text-cyan text-sm group-hover:translate-x-1 transition-transform">&rarr;</span>
+                    </div>
+                    <div class="mt-4 bg-gray-800/50 rounded-full h-2 overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-yellow-500 to-green-500 rounded-full module-progress" data-module="3" style="width: 0%"></div>
+                    </div>
+                </a>
+
+                <a href="./04-Agentic-Workflows/index.html" class="glass rounded-2xl p-6 card-hover group block">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-cyan/20 flex items-center justify-center text-2xl">&#129302;</div>
+                        <div>
+                            <div class="text-xs text-cyan font-mono">MODULE 04</div>
+                            <div class="font-bold text-lg">Agentic Workflows</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Build autonomous data pipeline agents that plan, execute, validate, and iterate on multi-day engineering projects.</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs bg-cyan/20 text-cyan px-2 py-1 rounded-full">Agent</span>
+                            <span class="text-xs bg-teal-500/20 text-teal-400 px-2 py-1 rounded-full">Pipeline</span>
+                        </div>
+                        <span class="text-cyan text-sm group-hover:translate-x-1 transition-transform">&rarr;</span>
+                    </div>
+                    <div class="mt-4 bg-gray-800/50 rounded-full h-2 overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-cyan to-teal-500 rounded-full module-progress" data-module="4" style="width: 0%"></div>
+                    </div>
+                </a>
+
+                <a href="./05-Evaluation-Runbooks/runbook.html" class="glass rounded-2xl p-6 card-hover group block">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center text-2xl">&#128202;</div>
+                        <div>
+                            <div class="text-xs text-cyan font-mono">MODULE 05</div>
+                            <div class="font-bold text-lg">Evaluation & Runbooks</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Measure prompt quality with metrics dashboards, build production runbooks, and establish evaluation frameworks for data engineering.</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full">Metrics</span>
+                            <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full">Quality</span>
+                        </div>
+                        <span class="text-cyan text-sm group-hover:translate-x-1 transition-transform">&rarr;</span>
+                    </div>
+                    <div class="mt-4 bg-gray-800/50 rounded-full h-2 overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full module-progress" data-module="5" style="width: 0%"></div>
+                    </div>
+                </a>
+
+                <div class="glass rounded-2xl p-6 flex flex-col items-center justify-center text-center border border-dashed border-cyan/20">
+                    <div class="text-4xl mb-4">&#127942;</div>
+                    <div class="font-bold text-lg mb-2">Complete All Modules</div>
+                    <p class="text-gray-400 text-sm">Finish all 5 modules and 50 quiz questions to earn your mastery badge!</p>
+                    <div class="mt-4">
+                        <svg class="progress-ring w-20 h-20" viewBox="0 0 80 80">
+                            <circle cx="40" cy="40" r="35" fill="none" stroke="#1e293b" stroke-width="6"/>
+                            <circle id="overall-progress-ring" cx="40" cy="40" r="35" fill="none" stroke="url(#progress-gradient)" stroke-width="6" stroke-dasharray="220" stroke-dashoffset="220" stroke-linecap="round"/>
+                            <defs>
+                                <linearGradient id="progress-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#00f5ff"/>
+                                    <stop offset="100%" stop-color="#a855f7"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="text-sm font-bold neon-text mt-2" id="overall-percent">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="path" class="py-20 px-4 relative z-10">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-5xl font-bold mb-4">
+                    <span class="gradient-text">7-Day Learning Path</span>
+                </h2>
+                <p class="text-gray-400 text-lg">Your structured journey from zero to production</p>
+            </div>
+            <div class="module-line space-y-6">
+                <div class="flex items-start gap-6 day-card opacity-0">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full glass neon-border flex items-center justify-center font-bold neon-text z-10">1</div>
+                    <div class="glass rounded-xl p-6 flex-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-lg">Foundations</h3>
+                            <span class="text-xs text-gray-400">2-3 hrs</span>
+                        </div>
+                        <p class="text-gray-400 text-sm">Understand what Claude 4.6 can do for data engineering. Explore the threat matrix — ETL, data cleaning, infrastructure, agentic capabilities.</p>
+                        <a href="./01-Claude-Threats/index.html" class="inline-block mt-3 text-cyan text-sm hover:underline">Start Module 01 &rarr;</a>
+                    </div>
+                </div>
+                <div class="flex items-start gap-6 day-card opacity-0">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full glass neon-border flex items-center justify-center font-bold neon-text z-10">2</div>
+                    <div class="glass rounded-xl p-6 flex-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-lg">Prompt Mastery</h3>
+                            <span class="text-xs text-gray-400">3-4 hrs</span>
+                        </div>
+                        <p class="text-gray-400 text-sm">Learn Chain-of-Thought prompting, JSON schema specifications, parallel tool calling patterns, and metacognitive self-review techniques.</p>
+                        <a href="./02-Prompt-Engineering/index.html" class="inline-block mt-3 text-cyan text-sm hover:underline">Start Module 02 &rarr;</a>
+                    </div>
+                </div>
+                <div class="flex items-start gap-6 day-card opacity-0">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full glass neon-border flex items-center justify-center font-bold neon-text z-10">3</div>
+                    <div class="glass rounded-xl p-6 flex-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-lg">API Integration</h3>
+                            <span class="text-xs text-gray-400">2-3 hrs</span>
+                        </div>
+                        <p class="text-gray-400 text-sm">Set up Anthropic API, AWS Bedrock, and Google Vertex AI. Build your first live Claude-powered data pipeline API calls.</p>
+                        <a href="./03-API-Integration/index.html" class="inline-block mt-3 text-cyan text-sm hover:underline">Start Module 03 &rarr;</a>
+                    </div>
+                </div>
+                <div class="flex items-start gap-6 day-card opacity-0">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full glass neon-border flex items-center justify-center font-bold neon-text z-10">4</div>
+                    <div class="glass rounded-xl p-6 flex-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-lg">Agentic Workflows</h3>
+                            <span class="text-xs text-gray-400">3-4 hrs</span>
+                        </div>
+                        <p class="text-gray-400 text-sm">Build autonomous pipeline agents that plan, execute, validate, and iterate. Create multi-step ETL workflows with Claude as the orchestrator.</p>
+                        <a href="./04-Agentic-Workflows/index.html" class="inline-block mt-3 text-cyan text-sm hover:underline">Start Module 04 &rarr;</a>
+                    </div>
+                </div>
+                <div class="flex items-start gap-6 day-card opacity-0">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full glass neon-border flex items-center justify-center font-bold neon-text z-10">5</div>
+                    <div class="glass rounded-xl p-6 flex-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-lg">Evaluation & Metrics</h3>
+                            <span class="text-xs text-gray-400">2-3 hrs</span>
+                        </div>
+                        <p class="text-gray-400 text-sm">Build evaluation dashboards, quality metrics, and production runbooks. Learn to measure and improve Claude's data engineering output.</p>
+                        <a href="./05-Evaluation-Runbooks/runbook.html" class="inline-block mt-3 text-cyan text-sm hover:underline">Start Module 05 &rarr;</a>
+                    </div>
+                </div>
+                <div class="flex items-start gap-6 day-card opacity-0">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full glass neon-border flex items-center justify-center font-bold neon-text z-10">6</div>
+                    <div class="glass rounded-xl p-6 flex-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-lg">Integration Day</h3>
+                            <span class="text-xs text-gray-400">4-5 hrs</span>
+                        </div>
+                        <p class="text-gray-400 text-sm">Combine everything into a complete end-to-end pipeline. Build a production-grade data engineering system powered by Claude.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-6 day-card opacity-0">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full glass neon-border flex items-center justify-center font-bold neon-text z-10">7</div>
+                    <div class="glass rounded-xl p-6 flex-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-lg">Portfolio Day</h3>
+                            <span class="text-xs text-gray-400">2-3 hrs</span>
+                        </div>
+                        <p class="text-gray-400 text-sm">Polish your project, deploy to production, write documentation, and share on LinkedIn/GitHub. Your portfolio-worthy capstone!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="progress" class="py-20 px-4 relative z-10">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl sm:text-5xl font-bold mb-4">
+                    <span class="gradient-text">Your Progress</span>
+                </h2>
+                <p class="text-gray-400">Track your learning journey across all modules</p>
+            </div>
+            <div class="glass rounded-2xl p-6 sm:p-8 neon-border">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                    <div class="text-center">
+                        <svg class="progress-ring w-32 h-32 mx-auto" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="52" fill="none" stroke="#1e293b" stroke-width="8"/>
+                            <circle id="quiz-progress-ring" cx="60" cy="60" r="52" fill="none" stroke="#00f5ff" stroke-width="8" stroke-dasharray="327" stroke-dashoffset="327" stroke-linecap="round"/>
+                        </svg>
+                        <div class="mt-2 font-bold neon-text text-xl" id="quiz-score">0/50</div>
+                        <div class="text-sm text-gray-400">Quiz Questions Correct</div>
+                    </div>
+                    <div class="text-center">
+                        <svg class="progress-ring w-32 h-32 mx-auto" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="52" fill="none" stroke="#1e293b" stroke-width="8"/>
+                            <circle id="module-progress-ring" cx="60" cy="60" r="52" fill="none" stroke="#a855f7" stroke-width="8" stroke-dasharray="327" stroke-dashoffset="327" stroke-linecap="round"/>
+                        </svg>
+                        <div class="mt-2 font-bold text-purple-400 text-xl" id="modules-done">0/5</div>
+                        <div class="text-sm text-gray-400">Modules Completed</div>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm w-32 text-gray-400">Module 1</span>
+                        <div class="flex-1 bg-gray-800/50 rounded-full h-3 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-red-500 to-orange-500 rounded-full transition-all duration-700" id="prog-1" style="width: 0%"></div>
+                        </div>
+                        <span class="text-sm text-gray-400 w-12 text-right" id="prog-1-text">0%</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm w-32 text-gray-400">Module 2</span>
+                        <div class="flex-1 bg-gray-800/50 rounded-full h-3 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full transition-all duration-700" id="prog-2" style="width: 0%"></div>
+                        </div>
+                        <span class="text-sm text-gray-400 w-12 text-right" id="prog-2-text">0%</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm w-32 text-gray-400">Module 3</span>
+                        <div class="flex-1 bg-gray-800/50 rounded-full h-3 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-yellow-500 to-green-500 rounded-full transition-all duration-700" id="prog-3" style="width: 0%"></div>
+                        </div>
+                        <span class="text-sm text-gray-400 w-12 text-right" id="prog-3-text">0%</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm w-32 text-gray-400">Module 4</span>
+                        <div class="flex-1 bg-gray-800/50 rounded-full h-3 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-cyan to-teal-500 rounded-full transition-all duration-700" id="prog-4" style="width: 0%"></div>
+                        </div>
+                        <span class="text-sm text-gray-400 w-12 text-right" id="prog-4-text">0%</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm w-32 text-gray-400">Module 5</span>
+                        <div class="flex-1 bg-gray-800/50 rounded-full h-3 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all duration-700" id="prog-5" style="width: 0%"></div>
+                        </div>
+                        <span class="text-sm text-gray-400 w-12 text-right" id="prog-5-text">0%</span>
+                    </div>
+                </div>
+                <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="resetProgress()" class="px-6 py-3 rounded-lg border border-red-500/30 text-red-400 text-sm hover:bg-red-500/10 transition">Reset All Progress</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 px-4 relative z-10 border-t border-gray-800">
+        <div class="max-w-6xl mx-auto text-center">
+            <div class="flex items-center justify-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan to-purple flex items-center justify-center text-nebula font-bold text-sm">C4</div>
+                <span class="font-bold neon-text">ClaudeOpus46 DataEng Mastery</span>
+            </div>
+            <p class="text-gray-500 text-sm mb-4">Built for Data Engineers who want to leverage AI for production pipelines.</p>
+            <div class="flex items-center justify-center gap-6 text-sm text-gray-500">
+                <a href="https://github.com/sunkaramallikarjuna369/Claudypromptmastry" class="hover:text-cyan transition">GitHub</a>
+                <a href="./runbook.md" class="hover:text-cyan transition">Runbook</a>
+                <span>MIT License</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    // Star field background
+    (function() {
+        const canvas = document.getElementById('stars-canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        function createStars() {
+            stars = [];
+            for (let i = 0; i < 200; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2,
+                    speed: Math.random() * 0.5 + 0.1,
+                    opacity: Math.random()
+                });
+            }
+        }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(star => {
+                star.opacity += (Math.random() - 0.5) * 0.02;
+                star.opacity = Math.max(0.1, Math.min(1, star.opacity));
+                star.y += star.speed;
+                if (star.y > canvas.height) { star.y = 0; star.x = Math.random() * canvas.width; }
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0, 245, 255, ${star.opacity * 0.5})`;
+                ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        }
+        resize();
+        createStars();
+        animate();
+        window.addEventListener('resize', () => { resize(); createStars(); });
+    })();
+
+    // GSAP Animations
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.to('#hero-badge', { opacity: 1, y: 0, duration: 0.8, delay: 0.2 });
+    gsap.to('#hero-title', { opacity: 1, y: 0, duration: 0.8, delay: 0.4 });
+    gsap.to('#hero-sub', { opacity: 1, y: 0, duration: 0.8, delay: 0.6 });
+    gsap.to('#hero-btns', { opacity: 1, y: 0, duration: 0.8, delay: 0.8 });
+    gsap.to('#hero-stats', { opacity: 1, y: 0, duration: 0.8, delay: 1.0 });
+
+    document.querySelectorAll('.day-card').forEach((card, i) => {
+        gsap.to(card, {
+            opacity: 1, x: 0, duration: 0.6, delay: i * 0.1,
+            scrollTrigger: { trigger: card, start: 'top 85%' }
+        });
+    });
+
+    // D3 ETL Flow
+    (function() {
+        const svg = d3.select('#etl-flow');
+        const container = document.getElementById('etl-flow');
+        const width = container.clientWidth;
+        const height = 350;
+        svg.attr('viewBox', `0 0 ${width} ${height}`);
+
+        const nodes = [
+            { id: 'source', label: 'S3/GCS\nSource', x: width * 0.08, y: height * 0.5, icon: '&#128451;' },
+            { id: 'extract', label: 'Extract\n(Spark)', x: width * 0.25, y: height * 0.3, icon: '&#128229;' },
+            { id: 'clean', label: 'Clean\n(Pandas)', x: width * 0.25, y: height * 0.7, icon: '&#129529;' },
+            { id: 'claude', label: 'Claude 4.6\nOrchestrator', x: width * 0.5, y: height * 0.5, icon: '&#129302;' },
+            { id: 'transform', label: 'Transform\n(dbt/SQL)', x: width * 0.72, y: height * 0.3, icon: '&#9881;' },
+            { id: 'validate', label: 'Validate\n(Quality)', x: width * 0.72, y: height * 0.7, icon: '&#9989;' },
+            { id: 'load', label: 'BigQuery\nLoad', x: width * 0.92, y: height * 0.5, icon: '&#128202;' }
+        ];
+        const links = [
+            { source: 'source', target: 'extract' },
+            { source: 'source', target: 'clean' },
+            { source: 'extract', target: 'claude' },
+            { source: 'clean', target: 'claude' },
+            { source: 'claude', target: 'transform' },
+            { source: 'claude', target: 'validate' },
+            { source: 'transform', target: 'load' },
+            { source: 'validate', target: 'load' }
+        ];
+
+        const nodeMap = {};
+        nodes.forEach(n => nodeMap[n.id] = n);
+
+        svg.selectAll('.etl-link')
+            .data(links)
+            .enter()
+            .append('path')
+            .attr('class', 'etl-link')
+            .attr('d', d => {
+                const s = nodeMap[d.source];
+                const t = nodeMap[d.target];
+                const mx = (s.x + t.x) / 2;
+                return `M${s.x},${s.y} C${mx},${s.y} ${mx},${t.y} ${t.x},${t.y}`;
+            })
+            .style('opacity', 0);
+
+        const nodeGroups = svg.selectAll('.etl-node-group')
+            .data(nodes)
+            .enter()
+            .append('g')
+            .attr('transform', d => `translate(${d.x}, ${d.y})`)
+            .style('opacity', 0)
+            .style('cursor', 'pointer');
+
+        nodeGroups.append('rect')
+            .attr('x', -40).attr('y', -30)
+            .attr('width', 80).attr('height', 60)
+            .attr('rx', 12)
+            .attr('class', 'etl-node');
+
+        nodeGroups.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('y', -5)
+            .attr('fill', '#00f5ff')
+            .attr('font-size', '18')
+            .html(d => d.icon);
+
+        nodeGroups.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('y', 18)
+            .attr('fill', '#94a3b8')
+            .attr('font-size', '9')
+            .attr('font-family', 'Inter, sans-serif')
+            .each(function(d) {
+                const lines = d.label.split('\n');
+                d3.select(this).text('');
+                lines.forEach((line, i) => {
+                    d3.select(this).append('tspan')
+                        .attr('x', 0)
+                        .attr('dy', i === 0 ? 0 : 12)
+                        .text(line);
+                });
+            });
+
+        // Animate in
+        gsap.to(svg.selectAll('.etl-link').nodes(), {
+            opacity: 1, duration: 0.5, stagger: 0.1, delay: 0.5,
+            scrollTrigger: { trigger: '#etl-flow', start: 'top 80%' }
+        });
+        gsap.to(svg.selectAll('.etl-node-group').nodes(), {
+            opacity: 1, duration: 0.5, stagger: 0.15, delay: 0.3,
+            scrollTrigger: { trigger: '#etl-flow', start: 'top 80%' }
+        });
+    })();
+
+    // Progress Tracker
+    function getProgress() {
+        try {
+            return JSON.parse(localStorage.getItem('claude-mastery-progress') || '{}');
+        } catch { return {}; }
+    }
+    function updateProgressUI() {
+        const prog = getProgress();
+        let totalCorrect = 0;
+        let modulesCompleted = 0;
+        for (let i = 1; i <= 5; i++) {
+            const modProg = prog[`module${i}`] || { correct: 0, total: 10 };
+            const pct = Math.round((modProg.correct / modProg.total) * 100);
+            const bar = document.getElementById(`prog-${i}`);
+            const text = document.getElementById(`prog-${i}-text`);
+            const modBar = document.querySelector(`.module-progress[data-module="${i}"]`);
+            if (bar) bar.style.width = `${pct}%`;
+            if (text) text.textContent = `${pct}%`;
+            if (modBar) modBar.style.width = `${pct}%`;
+            totalCorrect += modProg.correct;
+            if (pct >= 80) modulesCompleted++;
+        }
+        document.getElementById('quiz-score').textContent = `${totalCorrect}/50`;
+        document.getElementById('modules-done').textContent = `${modulesCompleted}/5`;
+        const quizRing = document.getElementById('quiz-progress-ring');
+        const modRing = document.getElementById('module-progress-ring');
+        const overallRing = document.getElementById('overall-progress-ring');
+        if (quizRing) quizRing.style.strokeDashoffset = 327 - (327 * totalCorrect / 50);
+        if (modRing) modRing.style.strokeDashoffset = 327 - (327 * modulesCompleted / 5);
+        const overallPct = Math.round(((totalCorrect / 50) * 0.7 + (modulesCompleted / 5) * 0.3) * 100);
+        if (overallRing) overallRing.style.strokeDashoffset = 220 - (220 * overallPct / 100);
+        document.getElementById('overall-percent').textContent = `${overallPct}%`;
+    }
+    function resetProgress() {
+        if (confirm('Reset all progress? This cannot be undone.')) {
+            localStorage.removeItem('claude-mastery-progress');
+            updateProgressUI();
+        }
+    }
+    updateProgressUI();
+
+    // Mobile menu
+    document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+    </script>
+</body>
+</html>
