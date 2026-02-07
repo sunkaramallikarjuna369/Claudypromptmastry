@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 05: Evaluation & Runbooks | DataEng Mastery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script>tailwind.config={theme:{extend:{colors:{nebula:'#0a0a1a',cyan:'#00f5ff',purple:'#a855f7'}}}}</script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#0a0a1a;color:#e2e8f0;overflow-x:hidden}.font-mono{font-family:'JetBrains Mono',monospace}
+        .glass{background:rgba(15,23,42,0.6);backdrop-filter:blur(20px);border:1px solid rgba(0,245,255,0.15)}
+        .glass-strong{background:rgba(15,23,42,0.8);backdrop-filter:blur(30px);border:1px solid rgba(0,245,255,0.2)}
+        .neon-text{color:#00f5ff;text-shadow:0 0 10px #00f5ff44,0 0 40px #00f5ff22}
+        .neon-border{border-color:#00f5ff;box-shadow:0 0 15px #00f5ff22}
+        .glow-btn{background:linear-gradient(135deg,#00f5ff22,#a855f722);border:1px solid #00f5ff44;transition:all 0.3s}
+        .glow-btn:hover{background:linear-gradient(135deg,#00f5ff44,#a855f744);box-shadow:0 0 30px #00f5ff33;transform:translateY(-2px)}
+        .gradient-text{background:linear-gradient(135deg,#00f5ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .card-hover{transition:all 0.4s cubic-bezier(0.4,0,0.2,1)}.card-hover:hover{transform:translateY(-4px);box-shadow:0 15px 40px #00f5ff15}
+        .quiz-option{transition:all 0.3s;cursor:pointer}.quiz-option:hover{border-color:#00f5ff;background:rgba(0,245,255,0.05)}
+        .quiz-option.selected{border-color:#00f5ff;background:rgba(0,245,255,0.1)}
+        #stars-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+        .metric-card{transition:all 0.3s}.metric-card:hover{transform:scale(1.03);border-color:#00f5ff55}
+        .runbook-step{border-left:3px solid #1e293b;transition:border-color 0.3s}.runbook-step.active-step{border-left-color:#00f5ff}
+    </style>
+</head>
+<body class="min-h-screen">
+    <canvas id="stars-canvas"></canvas>
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-strong">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-14">
+            <div class="flex items-center gap-3">
+                <a href="../index.html" class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan to-purple flex items-center justify-center text-nebula font-bold text-sm">C4</div>
+                    <span class="text-sm font-bold neon-text hidden sm:inline">DataEng Mastery</span>
+                </a>
+                <span class="text-gray-600">/</span>
+                <span class="text-sm text-gray-300">Module 05</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="../04-Agentic-Workflows/index.html" class="text-sm text-gray-400 hover:text-cyan transition">&larr; Prev</a>
+                <a href="../index.html" class="glow-btn px-3 py-1.5 rounded-lg text-xs text-cyan">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="pt-24 pb-16 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-14 h-14 rounded-xl bg-green-500/20 flex items-center justify-center text-3xl">&#128202;</div>
+                <div>
+                    <div class="text-xs text-cyan font-mono mb-1">MODULE 05</div>
+                    <h1 class="text-3xl sm:text-4xl font-bold">Evaluation & Runbooks</h1>
+                </div>
+            </div>
+            <p class="text-gray-400 text-lg max-w-3xl mb-8">Measure prompt quality with metrics dashboards, build production runbooks, and establish evaluation frameworks for Claude-powered data engineering.</p>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">Metrics Dashboard</span></h2>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                <div class="glass rounded-xl p-4 text-center metric-card neon-border">
+                    <div class="text-3xl font-bold neon-text" id="m-correctness">92%</div>
+                    <div class="text-xs text-gray-400 mt-1">Correctness</div>
+                    <div class="text-xs text-green-400">+3% from last week</div>
+                </div>
+                <div class="glass rounded-xl p-4 text-center metric-card">
+                    <div class="text-3xl font-bold text-purple-400" id="m-completeness">88%</div>
+                    <div class="text-xs text-gray-400 mt-1">Completeness</div>
+                    <div class="text-xs text-green-400">+5% from last week</div>
+                </div>
+                <div class="glass rounded-xl p-4 text-center metric-card">
+                    <div class="text-3xl font-bold text-yellow-400" id="m-efficiency">85%</div>
+                    <div class="text-xs text-gray-400 mt-1">Efficiency</div>
+                    <div class="text-xs text-yellow-400">+1% from last week</div>
+                </div>
+                <div class="glass rounded-xl p-4 text-center metric-card">
+                    <div class="text-3xl font-bold text-green-400" id="m-overall">89%</div>
+                    <div class="text-xs text-gray-400 mt-1">Overall Score</div>
+                    <div class="text-xs text-green-400">+3% from last week</div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass rounded-2xl p-6 neon-border">
+                    <h3 class="text-sm font-bold text-gray-300 mb-4">Quality Trends (7 Days)</h3>
+                    <canvas id="trends-chart" height="200"></canvas>
+                </div>
+                <div class="glass rounded-2xl p-6 neon-border">
+                    <h3 class="text-sm font-bold text-gray-300 mb-4">Dimension Breakdown</h3>
+                    <canvas id="radar-chart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">Evaluation Simulator</span></h2>
+            <div class="glass rounded-2xl p-6 neon-border">
+                <p class="text-sm text-gray-400 mb-4">Simulate evaluating a Claude-generated artifact. Adjust scores and see the weighted result.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-6">
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Correctness (30%)</label>
+                        <input type="range" id="eval-correct" min="1" max="10" value="8" class="w-full accent-cyan" oninput="calcScore()">
+                        <div class="text-center text-sm neon-text" id="val-correct">8</div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Completeness (25%)</label>
+                        <input type="range" id="eval-complete" min="1" max="10" value="7" class="w-full accent-purple-400" oninput="calcScore()">
+                        <div class="text-center text-sm text-purple-400" id="val-complete">7</div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Efficiency (20%)</label>
+                        <input type="range" id="eval-efficiency" min="1" max="10" value="7" class="w-full accent-yellow-400" oninput="calcScore()">
+                        <div class="text-center text-sm text-yellow-400" id="val-efficiency">7</div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Maintainability (15%)</label>
+                        <input type="range" id="eval-maintain" min="1" max="10" value="8" class="w-full accent-green-400" oninput="calcScore()">
+                        <div class="text-center text-sm text-green-400" id="val-maintain">8</div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Security (10%)</label>
+                        <input type="range" id="eval-security" min="1" max="10" value="9" class="w-full accent-red-400" oninput="calcScore()">
+                        <div class="text-center text-sm text-red-400" id="val-security">9</div>
+                    </div>
+                </div>
+                <div class="text-center glass rounded-xl p-6">
+                    <div class="text-sm text-gray-400 mb-2">Weighted Overall Score</div>
+                    <div class="text-5xl font-bold neon-text" id="overall-score">7.75</div>
+                    <div class="text-sm mt-2" id="score-label">Good - Minor improvements needed</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">Production Runbook</span></h2>
+            <div class="glass rounded-2xl p-6 neon-border">
+                <div class="space-y-4">
+                    <div class="runbook-step pl-6 py-3 cursor-pointer active-step" onclick="toggleRunbookStep(this)">
+                        <div class="flex items-center justify-between">
+                            <div class="font-bold text-sm">Step 1: Pre-flight Check</div>
+                            <span class="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full">Required</span>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-400 space-y-1">
+                            <div>&#8226; Verify source data availability (S3/GCS buckets accessible)</div>
+                            <div>&#8226; Check BigQuery quotas and slot availability</div>
+                            <div>&#8226; Validate Claude API health (ping endpoint)</div>
+                            <div>&#8226; Confirm environment variables set correctly</div>
+                        </div>
+                    </div>
+                    <div class="runbook-step pl-6 py-3 cursor-pointer" onclick="toggleRunbookStep(this)">
+                        <div class="flex items-center justify-between">
+                            <div class="font-bold text-sm">Step 2: Extract</div>
+                            <span class="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full">Automated</span>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-400 space-y-1 hidden">
+                            <div>&#8226; Pull data from source systems (S3, APIs, databases)</div>
+                            <div>&#8226; Log record counts for each source</div>
+                            <div>&#8226; Validate schema consistency against expected format</div>
+                            <div>&#8226; Store raw data in staging bucket</div>
+                        </div>
+                    </div>
+                    <div class="runbook-step pl-6 py-3 cursor-pointer" onclick="toggleRunbookStep(this)">
+                        <div class="flex items-center justify-between">
+                            <div class="font-bold text-sm">Step 3: Transform (Claude-Assisted)</div>
+                            <span class="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded-full">AI-Powered</span>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-400 space-y-1 hidden">
+                            <div>&#8226; Send data profile to Claude for analysis</div>
+                            <div>&#8226; Apply Claude-generated cleaning rules</div>
+                            <div>&#8226; Execute transformations (joins, aggregates, SCD)</div>
+                            <div>&#8226; Log transformation metrics (rows in/out, latency)</div>
+                        </div>
+                    </div>
+                    <div class="runbook-step pl-6 py-3 cursor-pointer" onclick="toggleRunbookStep(this)">
+                        <div class="flex items-center justify-between">
+                            <div class="font-bold text-sm">Step 4: Load</div>
+                            <span class="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full">Critical</span>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-400 space-y-1 hidden">
+                            <div>&#8226; Write to BigQuery staging tables</div>
+                            <div>&#8226; Run data quality checks on staged data</div>
+                            <div>&#8226; Promote to production tables if checks pass</div>
+                            <div>&#8226; Update table metadata and documentation</div>
+                        </div>
+                    </div>
+                    <div class="runbook-step pl-6 py-3 cursor-pointer" onclick="toggleRunbookStep(this)">
+                        <div class="flex items-center justify-between">
+                            <div class="font-bold text-sm">Step 5: Post-Validation & Alerting</div>
+                            <span class="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded-full">Monitoring</span>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-400 space-y-1 hidden">
+                            <div>&#8226; Compare row counts (source vs target, delta &lt; 1%)</div>
+                            <div>&#8226; Check null rates (&lt; threshold per column)</div>
+                            <div>&#8226; Validate business rules (revenue non-negative, etc.)</div>
+                            <div>&#8226; Send alerts via Slack/PagerDuty if thresholds breached</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">Module Quiz</span> <span class="text-sm text-gray-400 font-normal">(10 Questions)</span></h2>
+            <div class="glass rounded-2xl p-6 sm:p-8 neon-border">
+                <div id="quiz-container"></div>
+                <div class="flex items-center justify-between mt-6">
+                    <div class="text-sm text-gray-400">Question <span id="q-current">1</span> of 10</div>
+                    <div class="flex gap-3">
+                        <button id="prev-btn" onclick="prevQuestion()" class="px-4 py-2 rounded-lg border border-gray-700 text-sm text-gray-400 hidden">&larr; Prev</button>
+                        <button id="next-btn" onclick="nextQuestion()" class="glow-btn px-4 py-2 rounded-lg text-sm text-cyan font-medium">Next &rarr;</button>
+                    </div>
+                </div>
+                <div id="quiz-result" class="hidden mt-6 text-center">
+                    <div class="text-4xl mb-2" id="result-emoji"></div>
+                    <div class="text-2xl font-bold neon-text" id="result-score">0/10</div>
+                    <div class="text-gray-400 text-sm mt-1" id="result-msg"></div>
+                    <button onclick="retakeQuiz()" class="glow-btn px-6 py-2 rounded-lg text-sm text-cyan font-medium mt-4">Retake Quiz</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto flex justify-between">
+            <a href="../04-Agentic-Workflows/index.html" class="px-6 py-3 rounded-lg border border-gray-700 text-sm text-gray-400 hover:text-cyan transition">&larr; Module 04</a>
+            <a href="../index.html" class="glow-btn px-6 py-3 rounded-lg text-sm text-cyan font-medium">Back to Home</a>
+        </div>
+    </section>
+
+    <script>
+    (function(){const c=document.getElementById('stars-canvas'),x=c.getContext('2d');let s=[];function r(){c.width=window.innerWidth;c.height=window.innerHeight}function cr(){s=[];for(let i=0;i<150;i++)s.push({x:Math.random()*c.width,y:Math.random()*c.height,sz:Math.random()*1.5,sp:Math.random()*0.3+0.1,o:Math.random()})}function a(){x.clearRect(0,0,c.width,c.height);s.forEach(st=>{st.o+=(Math.random()-0.5)*0.02;st.o=Math.max(0.1,Math.min(1,st.o));st.y+=st.sp;if(st.y>c.height){st.y=0;st.x=Math.random()*c.width}x.beginPath();x.arc(st.x,st.y,st.sz,0,Math.PI*2);x.fillStyle=`rgba(0,245,255,${st.o*0.4})`;x.fill()});requestAnimationFrame(a)}r();cr();a();window.addEventListener('resize',()=>{r();cr()})})();
+
+    // Charts
+    const trendsCtx = document.getElementById('trends-chart').getContext('2d');
+    new Chart(trendsCtx, {
+        type: 'line',
+        data: {
+            labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+            datasets: [
+                {label:'Correctness',data:[85,87,89,88,91,90,92],borderColor:'#00f5ff',backgroundColor:'#00f5ff22',tension:0.4,fill:true},
+                {label:'Completeness',data:[80,82,83,85,86,87,88],borderColor:'#a855f7',backgroundColor:'#a855f722',tension:0.4,fill:true},
+                {label:'Efficiency',data:[78,80,81,82,83,84,85],borderColor:'#eab308',backgroundColor:'#eab30822',tension:0.4,fill:true}
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } },
+            scales: {
+                x: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+                y: { min: 70, max: 100, ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
+            }
+        }
+    });
+
+    const radarCtx = document.getElementById('radar-chart').getContext('2d');
+    new Chart(radarCtx, {
+        type: 'radar',
+        data: {
+            labels: ['Correctness','Completeness','Efficiency','Maintainability','Security'],
+            datasets: [{
+                label: 'Current Score',
+                data: [9.2, 8.8, 8.5, 8.0, 9.0],
+                borderColor: '#00f5ff',
+                backgroundColor: '#00f5ff22',
+                pointBackgroundColor: '#00f5ff'
+            },{
+                label: 'Target',
+                data: [9.5, 9.0, 9.0, 8.5, 9.5],
+                borderColor: '#a855f7',
+                backgroundColor: '#a855f722',
+                pointBackgroundColor: '#a855f7'
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } },
+            scales: {
+                r: {
+                    min: 5, max: 10,
+                    ticks: { color: '#64748b', backdropColor: 'transparent' },
+                    grid: { color: '#1e293b' },
+                    pointLabels: { color: '#94a3b8', font: { size: 10 } }
+                }
+            }
+        }
+    });
+
+    // Evaluation Simulator
+    function calcScore() {
+        const c = +document.getElementById('eval-correct').value;
+        const cm = +document.getElementById('eval-complete').value;
+        const e = +document.getElementById('eval-efficiency').value;
+        const m = +document.getElementById('eval-maintain').value;
+        const s = +document.getElementById('eval-security').value;
+        document.getElementById('val-correct').textContent = c;
+        document.getElementById('val-complete').textContent = cm;
+        document.getElementById('val-efficiency').textContent = e;
+        document.getElementById('val-maintain').textContent = m;
+        document.getElementById('val-security').textContent = s;
+        const score = (c*0.3 + cm*0.25 + e*0.2 + m*0.15 + s*0.1).toFixed(2);
+        document.getElementById('overall-score').textContent = score;
+        const label = document.getElementById('score-label');
+        if (score >= 9) { label.textContent = 'Excellent - Production ready!'; label.className = 'text-sm mt-2 text-green-400'; }
+        else if (score >= 7) { label.textContent = 'Good - Minor improvements needed'; label.className = 'text-sm mt-2 text-cyan'; }
+        else if (score >= 5) { label.textContent = 'Fair - Significant improvements needed'; label.className = 'text-sm mt-2 text-yellow-400'; }
+        else { label.textContent = 'Poor - Major rework required'; label.className = 'text-sm mt-2 text-red-400'; }
+    }
+    calcScore();
+
+    // Runbook steps toggle
+    function toggleRunbookStep(el) {
+        const details = el.querySelector('.space-y-1');
+        if (details) {
+            details.classList.toggle('hidden');
+            el.classList.toggle('active-step');
+        }
+    }
+
+    // Quiz
+    const questions = [
+        {q:"What is the highest-weighted dimension in the evaluation framework?",opts:["Security (10%)","Efficiency (20%)","Completeness (25%)","Correctness (30%)"],ans:3},
+        {q:"What is the minimum acceptable score before improvements are required?",opts:["5","6","7","8"],ans:2},
+        {q:"In the production runbook, what is the first step?",opts:["Extract data","Load to BigQuery","Pre-flight check","Transform data"],ans:2},
+        {q:"What should happen if post-validation thresholds are breached?",opts:["Ignore and continue","Send alerts via Slack/PagerDuty","Delete the data","Restart the entire pipeline"],ans:1},
+        {q:"What metric compares source and target data volumes?",opts:["Null rate","Row count comparison","Schema validation","API latency"],ans:1},
+        {q:"What is the role of 'staging tables' in the runbook?",opts:["Permanent storage","Temporary validation before production promotion","Backup tables","Archive tables"],ans:1},
+        {q:"How should the evaluation framework handle a security score below 7?",opts:["Ignore it","Log a warning","Require an improved version with fixes","Delete the code"],ans:2},
+        {q:"What type of chart best shows quality trends over time?",opts:["Pie chart","Bar chart","Line chart","Scatter plot"],ans:2},
+        {q:"In the weighted scoring formula, what is the weight for Maintainability?",opts:["10%","15%","20%","25%"],ans:1},
+        {q:"What is the purpose of a runbook in data engineering?",opts:["Marketing documentation","Step-by-step operational guide for pipeline management","Code style guide","Database schema documentation"],ans:1}
+    ];
+    let currentQ=0,answers=new Array(10).fill(-1),submitted=false;
+    function renderQuiz(){if(submitted)return;const q=questions[currentQ];document.getElementById('q-current').textContent=currentQ+1;let h=`<div class="mb-4"><div class="text-lg font-semibold mb-4">${currentQ+1}. ${q.q}</div><div class="space-y-3">`;q.opts.forEach((o,i)=>{const s=answers[currentQ]===i?'selected':'';h+=`<div class="quiz-option glass rounded-xl p-4 ${s}" onclick="selectAnswer(${i})"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center text-sm font-mono ${s?'border-cyan text-cyan':'text-gray-400'}">${String.fromCharCode(65+i)}</div><span class="text-sm">${o}</span></div></div>`});h+='</div></div>';document.getElementById('quiz-container').innerHTML=h;document.getElementById('prev-btn').classList.toggle('hidden',currentQ===0);document.getElementById('next-btn').textContent=currentQ===9?'Submit':'Next \u2192'}
+    function selectAnswer(i){answers[currentQ]=i;renderQuiz()}
+    function nextQuestion(){if(currentQ===9){submitQuiz();return}currentQ++;renderQuiz()}
+    function prevQuestion(){if(currentQ>0){currentQ--;renderQuiz()}}
+    function submitQuiz(){submitted=true;let c=0;questions.forEach((q,i)=>{if(answers[i]===q.ans)c++});const p=JSON.parse(localStorage.getItem('claude-mastery-progress')||'{}');p.module5={correct:c,total:10};localStorage.setItem('claude-mastery-progress',JSON.stringify(p));document.getElementById('quiz-container').classList.add('hidden');document.getElementById('prev-btn').classList.add('hidden');document.getElementById('next-btn').classList.add('hidden');document.getElementById('q-current').parentElement.classList.add('hidden');document.getElementById('quiz-result').classList.remove('hidden');document.getElementById('result-score').textContent=`${c}/10`;if(c>=8){document.getElementById('result-emoji').textContent='\u{1F3C6}';document.getElementById('result-msg').textContent='Evaluation master! You completed all modules!'}else if(c>=5){document.getElementById('result-emoji').textContent='\u{1F44D}';document.getElementById('result-msg').textContent='Good work! Review the metrics dashboard.'}else{document.getElementById('result-emoji').textContent='\u{1F4DA}';document.getElementById('result-msg').textContent='Try the evaluation simulator again.'}}
+    function retakeQuiz(){submitted=false;currentQ=0;answers=new Array(10).fill(-1);document.getElementById('quiz-container').classList.remove('hidden');document.getElementById('prev-btn').classList.remove('hidden');document.getElementById('next-btn').classList.remove('hidden');document.getElementById('q-current').parentElement.classList.remove('hidden');document.getElementById('quiz-result').classList.add('hidden');renderQuiz()}
+    renderQuiz();
+    </script>
+</body>
+</html>

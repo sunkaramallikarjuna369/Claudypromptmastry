@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 02: Prompt Engineering | DataEng Mastery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script>tailwind.config={theme:{extend:{colors:{nebula:'#0a0a1a',cyan:'#00f5ff',purple:'#a855f7'}}}}</script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#0a0a1a;color:#e2e8f0;overflow-x:hidden}.font-mono{font-family:'JetBrains Mono',monospace}
+        .glass{background:rgba(15,23,42,0.6);backdrop-filter:blur(20px);border:1px solid rgba(0,245,255,0.15)}
+        .glass-strong{background:rgba(15,23,42,0.8);backdrop-filter:blur(30px);border:1px solid rgba(0,245,255,0.2)}
+        .neon-text{color:#00f5ff;text-shadow:0 0 10px #00f5ff44}
+        .neon-border{border-color:#00f5ff;box-shadow:0 0 15px #00f5ff22}
+        .glow-btn{background:linear-gradient(135deg,#00f5ff22,#a855f722);border:1px solid #00f5ff44;transition:all 0.3s}
+        .glow-btn:hover{background:linear-gradient(135deg,#00f5ff44,#a855f744);box-shadow:0 0 30px #00f5ff33;transform:translateY(-2px)}
+        .gradient-text{background:linear-gradient(135deg,#00f5ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .card-hover{transition:all 0.4s}.card-hover:hover{transform:translateY(-4px);box-shadow:0 15px 40px #00f5ff15}
+        .quiz-option{transition:all 0.3s;cursor:pointer}.quiz-option:hover{border-color:#00f5ff;background:rgba(0,245,255,0.05)}
+        .quiz-option.selected{border-color:#00f5ff;background:rgba(0,245,255,0.1)}
+        #stars-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+        .tab-btn{cursor:pointer;transition:all 0.3s}.tab-btn.active{border-color:#00f5ff;color:#00f5ff;background:rgba(0,245,255,0.1)}
+        .cot-box{opacity:0;transform:translateX(-20px)}
+    </style>
+</head>
+<body class="min-h-screen">
+    <canvas id="stars-canvas"></canvas>
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-strong">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-14">
+            <div class="flex items-center gap-3">
+                <a href="../index.html" class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan to-purple flex items-center justify-center text-nebula font-bold text-sm">C4</div>
+                    <span class="text-sm font-bold neon-text hidden sm:inline">DataEng Mastery</span>
+                </a>
+                <span class="text-gray-600">/</span><span class="text-sm text-gray-300">Module 02</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="../01-Claude-Threats/index.html" class="text-sm text-gray-400 hover:text-cyan transition">&larr; Prev</a>
+                <a href="../03-API-Integration/index.html" class="glow-btn px-3 py-1.5 rounded-lg text-xs text-cyan">Next &rarr;</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="pt-24 pb-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-14 h-14 rounded-xl bg-purple-500/20 flex items-center justify-center text-3xl">&#129504;</div>
+                <div><div class="text-xs text-cyan font-mono mb-1">MODULE 02</div><h1 class="text-3xl sm:text-4xl font-bold">Prompt Engineering</h1></div>
+            </div>
+            <p class="text-gray-400 text-lg max-w-3xl mb-8">Master four advanced prompt engineering techniques for data engineering: Explicit Spec, Adaptive CoT, Parallel Tool Calling, and Metacognitive Self-Review.</p>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">Chain-of-Thought Flowchart</span></h2>
+            <div class="glass rounded-2xl p-6 sm:p-8 neon-border">
+                <div class="flex flex-col md:flex-row items-stretch gap-4">
+                    <div class="flex-1 glass rounded-xl p-6 text-center cot-box" id="cot-plan">
+                        <div class="w-12 h-12 mx-auto rounded-full bg-blue-500/20 flex items-center justify-center text-2xl mb-3">&#128270;</div>
+                        <div class="font-bold text-blue-400 mb-2">PLAN</div>
+                        <ul class="text-xs text-gray-400 text-left space-y-1"><li>&#8226; Analyze requirements</li><li>&#8226; Identify data sources</li><li>&#8226; Define output schema</li><li>&#8226; Estimate complexity</li></ul>
+                    </div>
+                    <div class="hidden md:flex items-center text-cyan text-2xl">&#8594;</div>
+                    <div class="flex-1 glass rounded-xl p-6 text-center cot-box" id="cot-exec">
+                        <div class="w-12 h-12 mx-auto rounded-full bg-green-500/20 flex items-center justify-center text-2xl mb-3">&#9889;</div>
+                        <div class="font-bold text-green-400 mb-2">EXECUTE</div>
+                        <ul class="text-xs text-gray-400 text-left space-y-1"><li>&#8226; Generate code step-by-step</li><li>&#8226; Follow plan strictly</li><li>&#8226; Add error handling</li><li>&#8226; Handle edge cases</li></ul>
+                    </div>
+                    <div class="hidden md:flex items-center text-cyan text-2xl">&#8594;</div>
+                    <div class="flex-1 glass rounded-xl p-6 text-center cot-box" id="cot-val">
+                        <div class="w-12 h-12 mx-auto rounded-full bg-purple-500/20 flex items-center justify-center text-2xl mb-3">&#9989;</div>
+                        <div class="font-bold text-purple-400 mb-2">VALIDATE</div>
+                        <ul class="text-xs text-gray-400 text-left space-y-1"><li>&#8226; Check requirements met</li><li>&#8226; Verify syntax</li><li>&#8226; Test edge cases</li><li>&#8226; Score quality</li></ul>
+                    </div>
+                </div>
+                <div class="mt-6 text-center"><button onclick="animCoT()" class="glow-btn px-6 py-2 rounded-lg text-sm text-cyan">&#9654; Animate Flow</button></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">Technique Explorer</span></h2>
+            <div class="flex flex-wrap gap-2 mb-6">
+                <button class="tab-btn glass px-4 py-2 rounded-lg text-sm border border-gray-700 active" onclick="showTab('explicit',this)">Explicit Spec</button>
+                <button class="tab-btn glass px-4 py-2 rounded-lg text-sm border border-gray-700" onclick="showTab('cot',this)">Adaptive CoT</button>
+                <button class="tab-btn glass px-4 py-2 rounded-lg text-sm border border-gray-700" onclick="showTab('parallel',this)">Parallel Tool Calling</button>
+                <button class="tab-btn glass px-4 py-2 rounded-lg text-sm border border-gray-700" onclick="showTab('meta',this)">Metacognitive</button>
+            </div>
+            <div id="tab-content" class="glass rounded-2xl p-6 sm:p-8 neon-border"></div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">Prompt Builder</span></h2>
+            <div class="glass rounded-2xl p-6 neon-border">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="text-sm text-gray-400 mb-2 block">Technique</label>
+                        <select id="pb-tech" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 focus:border-cyan outline-none" onchange="buildPrompt()">
+                            <option value="explicit">Explicit Spec (JSON Schema)</option>
+                            <option value="cot">Adaptive Chain-of-Thought</option>
+                            <option value="parallel">Parallel Tool Calling</option>
+                            <option value="meta">Metacognitive Self-Review</option>
+                        </select>
+                        <label class="text-sm text-gray-400 mb-2 block mt-4">Task Type</label>
+                        <select id="pb-task" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 focus:border-cyan outline-none" onchange="buildPrompt()">
+                            <option value="etl">ETL Pipeline</option>
+                            <option value="cleaning">Data Cleaning</option>
+                            <option value="terraform">Terraform IaC</option>
+                            <option value="bigquery">BigQuery SQL</option>
+                        </select>
+                        <button onclick="buildPrompt();navigator.clipboard.writeText(document.getElementById('pb-out').value)" class="glow-btn px-6 py-2 rounded-lg text-sm text-cyan mt-4 w-full">Copy Generated Prompt</button>
+                    </div>
+                    <div>
+                        <label class="text-sm text-gray-400 mb-2 block">Generated Prompt</label>
+                        <textarea id="pb-out" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-4 text-sm text-green-400 font-mono h-72 resize-none focus:border-cyan outline-none"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">Module Quiz</span> <span class="text-sm text-gray-400 font-normal">(10 Questions)</span></h2>
+            <div class="glass rounded-2xl p-6 sm:p-8 neon-border">
+                <div id="quiz-box"></div>
+                <div class="flex items-center justify-between mt-6">
+                    <div class="text-sm text-gray-400">Question <span id="q-num">1</span>/10</div>
+                    <div class="flex gap-3">
+                        <button id="prev-btn" onclick="prevQ()" class="px-4 py-2 rounded-lg border border-gray-700 text-sm text-gray-400 hidden">&larr; Prev</button>
+                        <button id="next-btn" onclick="nextQ()" class="glow-btn px-4 py-2 rounded-lg text-sm text-cyan">Next &rarr;</button>
+                    </div>
+                </div>
+                <div id="quiz-result" class="hidden mt-6 text-center">
+                    <div class="text-4xl mb-2" id="res-emoji"></div>
+                    <div class="text-2xl font-bold neon-text" id="res-score">0/10</div>
+                    <div class="text-gray-400 text-sm mt-1" id="res-msg"></div>
+                    <button onclick="retake()" class="glow-btn px-6 py-2 rounded-lg text-sm text-cyan mt-4">Retake</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto flex justify-between">
+            <a href="../01-Claude-Threats/index.html" class="px-6 py-3 rounded-lg border border-gray-700 text-sm text-gray-400 hover:text-cyan transition">&larr; Module 01</a>
+            <a href="../03-API-Integration/index.html" class="glow-btn px-6 py-3 rounded-lg text-sm text-cyan font-medium">Module 03: API Integration &rarr;</a>
+        </div>
+    </section>
+
+    <script>
+    // Stars
+    (function(){const c=document.getElementById('stars-canvas'),x=c.getContext('2d');let s=[];function r(){c.width=innerWidth;c.height=innerHeight}function mk(){s=[];for(let i=0;i<150;i++)s.push({x:Math.random()*c.width,y:Math.random()*c.height,sz:Math.random()*1.5,sp:Math.random()*0.3+0.1,o:Math.random()})}function draw(){x.clearRect(0,0,c.width,c.height);s.forEach(p=>{p.o+=(Math.random()-0.5)*0.02;p.o=Math.max(0.1,Math.min(1,p.o));p.y+=p.sp;if(p.y>c.height){p.y=0;p.x=Math.random()*c.width}x.beginPath();x.arc(p.x,p.y,p.sz,0,Math.PI*2);x.fillStyle=`rgba(0,245,255,${p.o*0.4})`;x.fill()});requestAnimationFrame(draw)}r();mk();draw();addEventListener('resize',()=>{r();mk()})})();
+
+    // CoT Animation
+    function animCoT(){gsap.fromTo('#cot-plan',{opacity:0,x:-30},{opacity:1,x:0,duration:0.6});gsap.fromTo('#cot-exec',{opacity:0,x:-30},{opacity:1,x:0,duration:0.6,delay:0.5});gsap.fromTo('#cot-val',{opacity:0,x:-30},{opacity:1,x:0,duration:0.6,delay:1.0})}
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.to('.cot-box',{opacity:1,x:0,duration:0.5,stagger:0.3,scrollTrigger:{trigger:'.cot-box',start:'top 85%'}});
+
+    // Tabs
+    const tabs={
+        explicit:`<h3 class="text-xl font-bold text-purple-400 mb-3">Explicit Specification with JSON Schemas</h3><p class="text-gray-300 mb-4">Define exact output format using JSON schemas for structured, parseable responses.</p><div class="bg-gray-900/50 rounded-xl p-4 font-mono text-xs text-green-400 overflow-auto"><pre>{
+  "pipeline": {
+    "name": "string",
+    "source": {"type": "s3|gcs|bigquery", "path": "string"},
+    "transforms": [{"step": 1, "operation": "string", "params": {}}],
+    "sink": {"type": "bigquery", "table": "string", "partition_by": "string"},
+    "quality_checks": [{"rule": "string", "threshold": 0.95}]
+  }
+}</pre></div><p class="text-gray-400 text-sm mt-3"><strong class="text-cyan">Best for:</strong> Code generation, config files, API responses needing machine-parseable output.</p>`,
+        cot:`<h3 class="text-xl font-bold text-blue-400 mb-3">Adaptive Chain-of-Thought</h3><p class="text-gray-300 mb-4">Force Claude through systematic Plan > Execute > Validate reasoning.</p><div class="bg-gray-900/50 rounded-xl p-4 font-mono text-xs text-green-400 overflow-auto"><pre>TASK: Build a data pipeline for customer analytics.
+
+STEP 1 - PLAN:
+- What data sources are involved?
+- What is the expected output schema?
+- What edge cases exist?
+
+STEP 2 - EXECUTE:
+- Write the code step by step
+- Reference each plan item
+- Add error handling for edge cases
+
+STEP 3 - VALIDATE:
+- Does code handle all scenarios?
+- Score: Correctness/Completeness/Efficiency (1-10)</pre></div><p class="text-gray-400 text-sm mt-3"><strong class="text-cyan">Best for:</strong> Complex multi-step tasks with ambiguous requirements.</p>`,
+        parallel:`<h3 class="text-xl font-bold text-yellow-400 mb-3">Parallel Tool Calling</h3><p class="text-gray-300 mb-4">Leverage Claude's ability to call multiple tools simultaneously for faster workflows.</p><div class="bg-gray-900/50 rounded-xl p-4 font-mono text-xs text-green-400 overflow-auto"><pre>Execute IN PARALLEL:
+
+Tool 1 - BigQuery:
+  execute_sql("SELECT COUNT(*) FROM analytics.orders WHERE date = CURRENT_DATE()")
+
+Tool 2 - REST API:
+  http_get("https://api.pipeline.io/v1/status")
+
+Tool 3 - File System:
+  read_file("gs://data-lake/schemas/orders_v2.json")
+
+AFTER ALL COMPLETE:
+Combine into unified pipeline health report.</pre></div><p class="text-gray-400 text-sm mt-3"><strong class="text-cyan">Best for:</strong> Gathering data from multiple independent sources, parallel validations.</p>`,
+        meta:`<h3 class="text-xl font-bold text-green-400 mb-3">Metacognitive Self-Review</h3><p class="text-gray-300 mb-4">Prompt Claude to critically evaluate its own output for production quality.</p><div class="bg-gray-900/50 rounded-xl p-4 font-mono text-xs text-green-400 overflow-auto"><pre>Generate a {data engineering artifact}.
+
+SELF-REVIEW after generating:
+CORRECTNESS (30%): Does it work? __/10
+COMPLETENESS (25%): All requirements met? __/10
+EFFICIENCY (20%): Is it optimized? __/10
+MAINTAINABILITY (15%): Clean and readable? __/10
+SECURITY (10%): Credentials safe? __/10
+
+OVERALL: __(weighted average)
+If any score < 7, provide IMPROVED version.</pre></div><p class="text-gray-400 text-sm mt-3"><strong class="text-cyan">Best for:</strong> Production code, critical infrastructure, high-quality output without human review.</p>`
+    };
+    function showTab(id,el){document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.getElementById('tab-content').innerHTML=tabs[id]}
+    showTab('explicit',document.querySelector('.tab-btn'));
+
+    // Prompt Builder
+    const tpl={
+        explicit:{etl:`You are a senior data engineer. Generate a PySpark ETL pipeline.\n\nOUTPUT FORMAT (strict JSON):\n{"pipeline_name":"string","source":{"type":"s3","path":"string"},"transforms":[{"step":1,"operation":"string"}],"sink":{"type":"bigquery","table":"string"},"quality_checks":[{"rule":"string","threshold":0.95}]}\n\nREQUIREMENTS:\n- Read from S3 parquet\n- Deduplicate, clean, transform\n- Write to BigQuery with partitioning`,cleaning:`Generate a Pandas cleaning script.\n\nOUTPUT (JSON):\n{"cleaning_steps":[{"column":"string","issue":"nulls|outliers","strategy":"string","code":"string"}],"quality_report":{"before":{},"after":{}}}\n\nHandle: nulls, outliers (IQR), date formats, string normalization`,terraform:`Generate Terraform for GCP data platform.\n\nOUTPUT (HCL modules):\n- BigQuery dataset + partitioned tables\n- GCS buckets + lifecycle policies\n- IAM roles (least privilege)\n- Variables for project_id, region`,bigquery:`Generate optimized BigQuery SQL.\n\nOUTPUT:\n- CTEs for readability\n- Partition pruning hints\n- Cost optimization notes\n\nTask: Daily revenue by category with 7-day rolling average`},
+        cot:{etl:`TASK: Build PySpark ETL for events.\n\nSTEP 1 - PLAN:\n- List source schemas\n- Define transforms\n- Plan partitioning\n\nSTEP 2 - EXECUTE:\n- Write complete PySpark\n- Add error handling\n\nSTEP 3 - VALIDATE:\n- Check syntax\n- Score quality`,cleaning:`TASK: Clean customer dataset.\n\nSTEP 1 - PLAN:\n- Profile columns\n- Identify anomaly types\n- Choose strategies\n\nSTEP 2 - EXECUTE:\n- Write Pandas pipeline\n- Implement IQR detection\n\nSTEP 3 - VALIDATE:\n- Verify no data loss\n- Check distributions`,terraform:`TASK: Terraform for GCP.\n\nSTEP 1 - PLAN:\n- List resources needed\n- Define module structure\n- Plan IAM\n\nSTEP 2 - EXECUTE:\n- Write modules\n- Configure IAM\n\nSTEP 3 - VALIDATE:\n- Check HCL syntax\n- Verify security`,bigquery:`TASK: BigQuery analytics.\n\nSTEP 1 - PLAN:\n- Understand schemas\n- Define metrics\n- Plan CTEs\n\nSTEP 2 - EXECUTE:\n- Write SQL\n- Add optimization\n\nSTEP 3 - VALIDATE:\n- Check logic\n- Estimate cost`},
+        parallel:{etl:`Execute IN PARALLEL:\n\nTool 1: read_file("s3://schemas/events.json")\nTool 2: execute_sql("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table='fact_events'")\nTool 3: http_get("https://api.pipeline.io/status")\n\nAFTER ALL: Generate ETL mapping source to target.`,cleaning:`Execute IN PARALLEL:\n\nTool 1: run_python("df.describe().to_json()")\nTool 2: execute_sql("SELECT column, COUNT(*)-COUNT(column) as nulls FROM table")\nTool 3: run_python("stats.zscore(df.select_dtypes('number'))")\n\nAFTER ALL: Generate cleaning script.`,terraform:`Execute IN PARALLEL:\n\nTool 1: execute_shell("terraform state list")\nTool 2: http_get("https://cloudresourcemanager.googleapis.com/v1/projects/my-project")\nTool 3: execute_shell("gcloud projects get-iam-policy my-project")\n\nAFTER ALL: Generate compatible Terraform.`,bigquery:`Execute IN PARALLEL:\n\nTool 1: execute_sql("SELECT COUNT(*) FROM analytics.orders")\nTool 2: execute_sql("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table='orders'")\nTool 3: execute_sql("SELECT total_bytes_processed FROM JOBS_BY_PROJECT LIMIT 10")\n\nAFTER ALL: Generate optimized query.`},
+        meta:{etl:`Generate PySpark ETL pipeline.\n\nSELF-REVIEW:\nCORRECTNESS (30%): __/10\nCOMPLETENESS (25%): __/10\nEFFICIENCY (20%): __/10\nMAINTAINABILITY (15%): __/10\nSECURITY (10%): __/10\n\nIf any < 7, provide improved version.`,cleaning:`Generate Pandas cleaning pipeline.\n\nSELF-REVIEW:\nCORRECTNESS (30%): __/10\nCOMPLETENESS (25%): __/10\nEFFICIENCY (20%): __/10\nMAINTAINABILITY (15%): __/10\nSECURITY (10%): __/10\n\nIf any < 7, improve.`,terraform:`Generate Terraform for GCP.\n\nSELF-REVIEW:\nCORRECTNESS (30%): __/10\nCOMPLETENESS (25%): __/10\nEFFICIENCY (20%): __/10\nMAINTAINABILITY (15%): __/10\nSECURITY (10%): __/10\n\nIf any < 7, improve.`,bigquery:`Generate BigQuery SQL.\n\nSELF-REVIEW:\nCORRECTNESS (30%): __/10\nCOMPLETENESS (25%): __/10\nEFFICIENCY (20%): __/10\nMAINTAINABILITY (15%): __/10\nSECURITY (10%): __/10\n\nIf any < 7, improve.`}
+    };
+    function buildPrompt(){const t=document.getElementById('pb-tech').value,k=document.getElementById('pb-task').value;document.getElementById('pb-out').value=tpl[t]?.[k]||'Select options'}
+    buildPrompt();
+
+    // Quiz
+    const qs=[
+        {q:"What does 'Explicit Spec' use to define output format?",o:["Markdown","JSON Schemas","XML","Plain text"],a:1},
+        {q:"In Adaptive CoT, what is the correct sequence?",o:["Execute>Plan>Validate","Validate>Plan>Execute","Plan>Execute>Validate","Plan>Validate>Execute"],a:2},
+        {q:"Main benefit of Parallel Tool Calling?",o:["Less tokens","Simultaneous operations on multiple sources","Better grammar","Faster text"],a:1},
+        {q:"Metacognitive self-review asks Claude to:",o:["Generate more code","Critically evaluate its own output","Use fewer tokens","Skip validation"],a:1},
+        {q:"Highest weighted dimension in quality scoring?",o:["Security (10%)","Efficiency (20%)","Completeness (25%)","Correctness (30%)"],a:3},
+        {q:"When to use Explicit Spec over CoT?",o:["When output must be machine-parseable","When debugging","When explaining concepts","When brainstorming"],a:0},
+        {q:"What does 'Adaptive' mean in Adaptive CoT?",o:["Prompt changes length","Claude adapts reasoning to task complexity","Schema adapts","API adapts"],a:1},
+        {q:"What if self-review score is below 7?",o:["Ignore","Ask user","Provide improved version","Delete output"],a:2},
+        {q:"Parallel Tool Calling is best when:",o:["Tasks depend on each other","Tasks are independent","Only one source","Task is simple"],a:1},
+        {q:"Which technique includes quality_checks in schema?",o:["Metacognitive","Parallel","CoT","Explicit Spec"],a:3}
+    ];
+    let cur=0,ans=Array(10).fill(-1),done=false;
+    function render(){if(done)return;const q=qs[cur];document.getElementById('q-num').textContent=cur+1;let h=`<div class="mb-4"><div class="text-lg font-semibold mb-4">${cur+1}. ${q.q}</div><div class="space-y-3">`;q.o.forEach((o,i)=>{const s=ans[cur]===i?'selected':'';h+=`<div class="quiz-option glass rounded-xl p-4 ${s}" onclick="pick(${i})"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center text-sm font-mono ${s?'border-cyan text-cyan':'text-gray-400'}">${String.fromCharCode(65+i)}</div><span class="text-sm">${o}</span></div></div>`});h+='</div></div>';document.getElementById('quiz-box').innerHTML=h;document.getElementById('prev-btn').classList.toggle('hidden',cur===0);document.getElementById('next-btn').textContent=cur===9?'Submit':'Next \u2192'}
+    function pick(i){ans[cur]=i;render()}
+    function nextQ(){if(cur===9){submit();return}cur++;render()}
+    function prevQ(){if(cur>0){cur--;render()}}
+    function submit(){done=true;let c=0;qs.forEach((q,i)=>{if(ans[i]===q.a)c++});const p=JSON.parse(localStorage.getItem('claude-mastery-progress')||'{}');p.module2={correct:c,total:10};localStorage.setItem('claude-mastery-progress',JSON.stringify(p));document.getElementById('quiz-box').classList.add('hidden');document.getElementById('prev-btn').classList.add('hidden');document.getElementById('next-btn').classList.add('hidden');document.getElementById('q-num').parentElement.classList.add('hidden');document.getElementById('quiz-result').classList.remove('hidden');document.getElementById('res-score').textContent=`${c}/10`;document.getElementById('res-emoji').textContent=c>=8?'\u{1F3C6}':c>=5?'\u{1F44D}':'\u{1F4DA}';document.getElementById('res-msg').textContent=c>=8?'Prompt master!':c>=5?'Good progress!':'Keep practicing!'}
+    function retake(){done=false;cur=0;ans=Array(10).fill(-1);document.getElementById('quiz-box').classList.remove('hidden');document.getElementById('prev-btn').classList.remove('hidden');document.getElementById('next-btn').classList.remove('hidden');document.getElementById('q-num').parentElement.classList.remove('hidden');document.getElementById('quiz-result').classList.add('hidden');render()}
+    render();
+    </script>
+</body>
+</html>

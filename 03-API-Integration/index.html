@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 03: API Integration | DataEng Mastery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+    <script>tailwind.config={theme:{extend:{colors:{nebula:'#0a0a1a',cyan:'#00f5ff',purple:'#a855f7'}}}}</script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#0a0a1a;color:#e2e8f0;overflow-x:hidden}.font-mono{font-family:'JetBrains Mono',monospace}
+        .glass{background:rgba(15,23,42,0.6);backdrop-filter:blur(20px);border:1px solid rgba(0,245,255,0.15)}
+        .glass-strong{background:rgba(15,23,42,0.8);backdrop-filter:blur(30px);border:1px solid rgba(0,245,255,0.2)}
+        .neon-text{color:#00f5ff;text-shadow:0 0 10px #00f5ff44,0 0 40px #00f5ff22}
+        .neon-border{border-color:#00f5ff;box-shadow:0 0 15px #00f5ff22}
+        .glow-btn{background:linear-gradient(135deg,#00f5ff22,#a855f722);border:1px solid #00f5ff44;transition:all 0.3s}
+        .glow-btn:hover{background:linear-gradient(135deg,#00f5ff44,#a855f744);box-shadow:0 0 30px #00f5ff33;transform:translateY(-2px)}
+        .gradient-text{background:linear-gradient(135deg,#00f5ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .card-hover{transition:all 0.4s cubic-bezier(0.4,0,0.2,1)}.card-hover:hover{transform:translateY(-4px);box-shadow:0 15px 40px #00f5ff15;border-color:#00f5ff55}
+        .CodeMirror{height:auto;min-height:180px;border-radius:0.75rem;font-size:13px}
+        .quiz-option{transition:all 0.3s;cursor:pointer}.quiz-option:hover{border-color:#00f5ff;background:rgba(0,245,255,0.05)}
+        .quiz-option.selected{border-color:#00f5ff;background:rgba(0,245,255,0.1)}
+        #stars-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+        .provider-tab{cursor:pointer;transition:all 0.3s}.provider-tab.active{border-color:#00f5ff;color:#00f5ff;background:rgba(0,245,255,0.1)}
+        .api-response{font-family:'JetBrains Mono',monospace;white-space:pre-wrap}
+    </style>
+</head>
+<body class="min-h-screen">
+    <canvas id="stars-canvas"></canvas>
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-strong">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-14">
+            <div class="flex items-center gap-3">
+                <a href="../index.html" class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan to-purple flex items-center justify-center text-nebula font-bold text-sm">C4</div>
+                    <span class="text-sm font-bold neon-text hidden sm:inline">DataEng Mastery</span>
+                </a>
+                <span class="text-gray-600">/</span>
+                <span class="text-sm text-gray-300">Module 03</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="../02-Prompt-Engineering/index.html" class="text-sm text-gray-400 hover:text-cyan transition">&larr; Prev</a>
+                <a href="../04-Agentic-Workflows/index.html" class="glow-btn px-3 py-1.5 rounded-lg text-xs text-cyan">Next &rarr;</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="pt-24 pb-16 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-14 h-14 rounded-xl bg-yellow-500/20 flex items-center justify-center text-3xl">&#9889;</div>
+                <div>
+                    <div class="text-xs text-cyan font-mono mb-1">MODULE 03</div>
+                    <h1 class="text-3xl sm:text-4xl font-bold">API Integration</h1>
+                </div>
+            </div>
+            <p class="text-gray-400 text-lg max-w-3xl mb-8">Connect to Claude via Anthropic API, AWS Bedrock, and Google Vertex AI. Build real API calls with Python for data engineering tasks.</p>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="glass rounded-xl p-4 text-center card-hover"><div class="text-lg font-bold text-orange-400">Anthropic</div><div class="text-xs text-gray-400">Direct API</div></div>
+                <div class="glass rounded-xl p-4 text-center card-hover"><div class="text-lg font-bold text-yellow-400">Bedrock</div><div class="text-xs text-gray-400">AWS</div></div>
+                <div class="glass rounded-xl p-4 text-center card-hover"><div class="text-lg font-bold text-blue-400">Vertex AI</div><div class="text-xs text-gray-400">Google Cloud</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">API Playground</span></h2>
+            <div class="glass rounded-2xl p-6 neon-border">
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button class="provider-tab glass px-4 py-2 rounded-lg text-sm border border-gray-700 active" onclick="switchProvider('anthropic')">Anthropic Direct</button>
+                    <button class="provider-tab glass px-4 py-2 rounded-lg text-sm border border-gray-700" onclick="switchProvider('bedrock')">AWS Bedrock</button>
+                    <button class="provider-tab glass px-4 py-2 rounded-lg text-sm border border-gray-700" onclick="switchProvider('vertex')">Google Vertex AI</button>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <label class="text-sm text-gray-400 mb-2 block">API Code</label>
+                        <textarea id="api-code" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-4 text-sm text-green-400 font-mono h-72 resize-none focus:border-cyan outline-none"></textarea>
+                        <div class="flex gap-3 mt-3">
+                            <button onclick="runMockAPI()" class="glow-btn px-6 py-2 rounded-lg text-sm text-cyan font-medium flex-1">&#9654; Run (Mock)</button>
+                            <button onclick="copyAPICode()" class="px-4 py-2 rounded-lg border border-gray-700 text-sm text-gray-400 hover:text-cyan transition">Copy</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-sm text-gray-400 mb-2 block">Response</label>
+                        <div id="api-response" class="bg-gray-900 border border-gray-700 rounded-xl p-4 text-sm text-cyan font-mono h-72 overflow-auto">Click "Run (Mock)" to see a simulated response...</div>
+                        <div class="flex items-center gap-4 mt-3 text-xs text-gray-500">
+                            <span>Latency: <span id="api-latency">--</span>ms</span>
+                            <span>Tokens: <span id="api-tokens">--</span></span>
+                            <span>Cost: $<span id="api-cost">--</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">GCP Integration Links</span></h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <a href="https://console.anthropic.com" target="_blank" class="glass rounded-xl p-5 card-hover block">
+                    <div class="text-orange-400 font-bold mb-2">Anthropic Console</div>
+                    <p class="text-xs text-gray-400">Get your API key, manage billing, view usage dashboards.</p>
+                    <span class="text-cyan text-xs mt-2 inline-block">console.anthropic.com &rarr;</span>
+                </a>
+                <a href="https://console.cloud.google.com/vertex-ai" target="_blank" class="glass rounded-xl p-5 card-hover block">
+                    <div class="text-blue-400 font-bold mb-2">Vertex AI Console</div>
+                    <p class="text-xs text-gray-400">Access Claude on GCP, manage endpoints, monitor usage.</p>
+                    <span class="text-cyan text-xs mt-2 inline-block">cloud.google.com/vertex-ai &rarr;</span>
+                </a>
+                <a href="https://console.aws.amazon.com/bedrock" target="_blank" class="glass rounded-xl p-5 card-hover block">
+                    <div class="text-yellow-400 font-bold mb-2">AWS Bedrock Console</div>
+                    <p class="text-xs text-gray-400">Access Claude on AWS, configure model access, set up billing.</p>
+                    <span class="text-cyan text-xs mt-2 inline-block">console.aws.amazon.com/bedrock &rarr;</span>
+                </a>
+                <a href="https://console.cloud.google.com/bigquery" target="_blank" class="glass rounded-xl p-5 card-hover block">
+                    <div class="text-green-400 font-bold mb-2">BigQuery Console</div>
+                    <p class="text-xs text-gray-400">Run queries, manage datasets, view table schemas and costs.</p>
+                    <span class="text-cyan text-xs mt-2 inline-block">console.cloud.google.com/bigquery &rarr;</span>
+                </a>
+                <a href="https://docs.anthropic.com/en/docs" target="_blank" class="glass rounded-xl p-5 card-hover block">
+                    <div class="text-purple-400 font-bold mb-2">Claude API Docs</div>
+                    <p class="text-xs text-gray-400">Full API reference, tool calling guides, best practices.</p>
+                    <span class="text-cyan text-xs mt-2 inline-block">docs.anthropic.com &rarr;</span>
+                </a>
+                <a href="https://github.com/langchain-ai/langchain" target="_blank" class="glass rounded-xl p-5 card-hover block">
+                    <div class="text-red-400 font-bold mb-2">LangChain</div>
+                    <p class="text-xs text-gray-400">Build LLM-powered data engineering chains with Claude integration.</p>
+                    <span class="text-cyan text-xs mt-2 inline-block">github.com/langchain-ai &rarr;</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6"><span class="gradient-text">Module Quiz</span> <span class="text-sm text-gray-400 font-normal">(10 Questions)</span></h2>
+            <div class="glass rounded-2xl p-6 sm:p-8 neon-border">
+                <div id="quiz-container"></div>
+                <div class="flex items-center justify-between mt-6">
+                    <div class="text-sm text-gray-400">Question <span id="q-current">1</span> of 10</div>
+                    <div class="flex gap-3">
+                        <button id="prev-btn" onclick="prevQuestion()" class="px-4 py-2 rounded-lg border border-gray-700 text-sm text-gray-400 hidden">&larr; Prev</button>
+                        <button id="next-btn" onclick="nextQuestion()" class="glow-btn px-4 py-2 rounded-lg text-sm text-cyan font-medium">Next &rarr;</button>
+                    </div>
+                </div>
+                <div id="quiz-result" class="hidden mt-6 text-center">
+                    <div class="text-4xl mb-2" id="result-emoji"></div>
+                    <div class="text-2xl font-bold neon-text" id="result-score">0/10</div>
+                    <div class="text-gray-400 text-sm mt-1" id="result-msg"></div>
+                    <button onclick="retakeQuiz()" class="glow-btn px-6 py-2 rounded-lg text-sm text-cyan font-medium mt-4">Retake Quiz</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto flex justify-between">
+            <a href="../02-Prompt-Engineering/index.html" class="px-6 py-3 rounded-lg border border-gray-700 text-sm text-gray-400 hover:text-cyan transition">&larr; Module 02</a>
+            <a href="../04-Agentic-Workflows/index.html" class="glow-btn px-6 py-3 rounded-lg text-sm text-cyan font-medium">Module 04: Agentic Workflows &rarr;</a>
+        </div>
+    </section>
+
+    <script>
+    (function(){const c=document.getElementById('stars-canvas'),x=c.getContext('2d');let s=[];function r(){c.width=window.innerWidth;c.height=window.innerHeight}function cr(){s=[];for(let i=0;i<150;i++)s.push({x:Math.random()*c.width,y:Math.random()*c.height,sz:Math.random()*1.5,sp:Math.random()*0.3+0.1,o:Math.random()})}function a(){x.clearRect(0,0,c.width,c.height);s.forEach(st=>{st.o+=(Math.random()-0.5)*0.02;st.o=Math.max(0.1,Math.min(1,st.o));st.y+=st.sp;if(st.y>c.height){st.y=0;st.x=Math.random()*c.width}x.beginPath();x.arc(st.x,st.y,st.sz,0,Math.PI*2);x.fillStyle=`rgba(0,245,255,${st.o*0.4})`;x.fill()});requestAnimationFrame(a)}r();cr();a();window.addEventListener('resize',()=>{r();cr()})})();
+
+    const providerCode = {
+        anthropic: `import anthropic
+
+client = anthropic.Anthropic(api_key="sk-ant-xxx")
+
+message = client.messages.create(
+    model="claude-sonnet-4-20250514",
+    max_tokens=4096,
+    system="You are a senior data engineer specializing in GCP BigQuery and ETL pipelines.",
+    messages=[{
+        "role": "user",
+        "content": """Generate a BigQuery SQL query that:
+1. Calculates daily revenue by product category
+2. Includes 7-day rolling average
+3. Handles null values gracefully
+4. Optimizes for partition pruning
+
+Tables:
+- analytics.orders (order_id, product_id, amount, order_date)
+- analytics.products (product_id, category, name)"""
+    }]
+)
+
+print(message.content[0].text)`,
+        bedrock: `import boto3
+import json
+
+bedrock = boto3.client(
+    'bedrock-runtime',
+    region_name='us-east-1'
+)
+
+response = bedrock.invoke_model(
+    modelId='anthropic.claude-sonnet-4-20250514-v1:0',
+    body=json.dumps({
+        "anthropic_version": "bedrock-2023-05-31",
+        "max_tokens": 4096,
+        "system": "You are a senior data engineer.",
+        "messages": [{
+            "role": "user",
+            "content": "Create a Terraform module for BigQuery dataset with partitioned tables and IAM bindings."
+        }]
+    })
+)
+
+result = json.loads(response['body'].read())
+print(result['content'][0]['text'])`,
+        vertex: `from anthropic import AnthropicVertex
+
+client = AnthropicVertex(
+    region="us-east5",
+    project_id="my-gcp-project"
+)
+
+message = client.messages.create(
+    model="claude-sonnet-4@20250514",
+    max_tokens=4096,
+    system="You are a GCP data engineer expert.",
+    messages=[{
+        "role": "user",
+        "content": "Write a Cloud Dataflow pipeline in Python for real-time event processing with BigQuery sink."
+    }]
+)
+
+print(message.content[0].text)`
+    };
+
+    const mockResponses = {
+        anthropic: `WITH daily_revenue AS (
+  SELECT
+    p.category,
+    o.order_date,
+    COALESCE(SUM(o.amount), 0) AS daily_total
+  FROM analytics.orders o
+  JOIN analytics.products p ON o.product_id = p.product_id
+  WHERE o.order_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 90 DAY)
+  GROUP BY p.category, o.order_date
+),
+rolling_avg AS (
+  SELECT
+    category,
+    order_date,
+    daily_total,
+    AVG(daily_total) OVER (
+      PARTITION BY category
+      ORDER BY order_date
+      ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+    ) AS rolling_7d_avg
+  FROM daily_revenue
+)
+SELECT
+  category,
+  order_date,
+  daily_total,
+  ROUND(rolling_7d_avg, 2) AS rolling_7d_avg,
+  ROUND(daily_total - rolling_7d_avg, 2) AS variance
+FROM rolling_avg
+ORDER BY category, order_date DESC`,
+        bedrock: `resource "google_bigquery_dataset" "analytics" {
+  dataset_id    = "analytics"
+  friendly_name = "Analytics Dataset"
+  location      = var.region
+  project       = var.project_id
+
+  labels = {
+    env = var.environment
+  }
+}
+
+resource "google_bigquery_table" "fact_events" {
+  dataset_id = google_bigquery_dataset.analytics.dataset_id
+  table_id   = "fact_events"
+  project    = var.project_id
+
+  time_partitioning {
+    type  = "DAY"
+    field = "event_date"
+  }
+
+  clustering = ["customer_id", "event_type"]
+
+  schema = file("schemas/fact_events.json")
+}`,
+        vertex: `import apache_beam as beam
+from apache_beam.options.pipeline_options import PipelineOptions
+from apache_beam.io.gcp.bigquery import WriteToBigQuery
+
+class ParseEvent(beam.DoFn):
+    def process(self, element):
+        import json
+        event = json.loads(element.decode('utf-8'))
+        yield {
+            'event_id': event['id'],
+            'event_type': event['type'],
+            'timestamp': event['timestamp'],
+            'user_id': event.get('user_id'),
+            'payload': json.dumps(event.get('data', {}))
+        }
+
+options = PipelineOptions(
+    streaming=True,
+    project='my-gcp-project',
+    region='us-central1',
+    runner='DataflowRunner'
+)
+
+with beam.Pipeline(options=options) as p:
+    (p
+     | 'ReadPubSub' >> beam.io.ReadFromPubSub(topic='projects/my-project/topics/events')
+     | 'ParseEvents' >> beam.ParDo(ParseEvent())
+     | 'WriteBQ' >> WriteToBigQuery(
+         table='my-project:analytics.streaming_events',
+         write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND,
+         create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED
+     )
+    )`
+    };
+
+    let currentProvider = 'anthropic';
+    function switchProvider(p) {
+        currentProvider = p;
+        document.querySelectorAll('.provider-tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('api-code').value = providerCode[p];
+        document.getElementById('api-response').textContent = 'Click "Run (Mock)" to see a simulated response...';
+        document.getElementById('api-latency').textContent = '--';
+        document.getElementById('api-tokens').textContent = '--';
+        document.getElementById('api-cost').textContent = '--';
+    }
+    document.getElementById('api-code').value = providerCode.anthropic;
+
+    function runMockAPI() {
+        const resp = document.getElementById('api-response');
+        resp.textContent = 'Processing...';
+        resp.style.color = '#eab308';
+        const start = Date.now();
+        setTimeout(() => {
+            resp.textContent = mockResponses[currentProvider];
+            resp.style.color = '#00f5ff';
+            const latency = Math.floor(Math.random() * 2000) + 800;
+            const tokens = Math.floor(Math.random() * 3000) + 500;
+            document.getElementById('api-latency').textContent = latency;
+            document.getElementById('api-tokens').textContent = tokens;
+            document.getElementById('api-cost').textContent = (tokens * 0.000015).toFixed(4);
+        }, 1500);
+    }
+    function copyAPICode() {
+        navigator.clipboard.writeText(document.getElementById('api-code').value);
+    }
+
+    const questions = [
+        {q:"Which Python library is used for the Anthropic direct API?",opts:["boto3","anthropic","openai","google-cloud"],ans:1},
+        {q:"What AWS service provides access to Claude?",opts:["SageMaker","Lambda","Bedrock","Comprehend"],ans:2},
+        {q:"What is Claude's maximum context window?",opts:["100K tokens","200K tokens","500K tokens","1M tokens"],ans:3},
+        {q:"Which Google Cloud service hosts Claude?",opts:["Cloud Run","Vertex AI","Cloud Functions","App Engine"],ans:1},
+        {q:"What parameter controls response length in the API?",opts:["max_length","max_tokens","token_limit","response_size"],ans:1},
+        {q:"What format does the Bedrock API use for the request body?",opts:["XML","YAML","JSON","Protobuf"],ans:2},
+        {q:"Which library enables building LLM chains with Claude?",opts:["TensorFlow","PyTorch","LangChain","Scikit-learn"],ans:2},
+        {q:"What is the 'system' parameter used for in Claude API?",opts:["System health check","Setting Claude's role/behavior","API version","Error handling"],ans:1},
+        {q:"For GCP-native Claude access, which region is commonly used?",opts:["us-west1","eu-west1","us-east5","asia-east1"],ans:2},
+        {q:"What Python library connects Pandas to BigQuery?",opts:["pandas-sql","pandas-gbq","bq-pandas","pandas-cloud"],ans:1}
+    ];
+    let currentQ=0,answers=new Array(10).fill(-1),submitted=false;
+    function renderQuiz(){if(submitted)return;const q=questions[currentQ];document.getElementById('q-current').textContent=currentQ+1;let h=`<div class="mb-4"><div class="text-lg font-semibold mb-4">${currentQ+1}. ${q.q}</div><div class="space-y-3">`;q.opts.forEach((o,i)=>{const s=answers[currentQ]===i?'selected':'';h+=`<div class="quiz-option glass rounded-xl p-4 ${s}" onclick="selectAnswer(${i})"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center text-sm font-mono ${s?'border-cyan text-cyan':'text-gray-400'}">${String.fromCharCode(65+i)}</div><span class="text-sm">${o}</span></div></div>`});h+='</div></div>';document.getElementById('quiz-container').innerHTML=h;document.getElementById('prev-btn').classList.toggle('hidden',currentQ===0);document.getElementById('next-btn').textContent=currentQ===9?'Submit':'Next \u2192'}
+    function selectAnswer(i){answers[currentQ]=i;renderQuiz()}
+    function nextQuestion(){if(currentQ===9){submitQuiz();return}currentQ++;renderQuiz()}
+    function prevQuestion(){if(currentQ>0){currentQ--;renderQuiz()}}
+    function submitQuiz(){submitted=true;let c=0;questions.forEach((q,i)=>{if(answers[i]===q.ans)c++});const p=JSON.parse(localStorage.getItem('claude-mastery-progress')||'{}');p.module3={correct:c,total:10};localStorage.setItem('claude-mastery-progress',JSON.stringify(p));document.getElementById('quiz-container').classList.add('hidden');document.getElementById('prev-btn').classList.add('hidden');document.getElementById('next-btn').classList.add('hidden');document.getElementById('q-current').parentElement.classList.add('hidden');document.getElementById('quiz-result').classList.remove('hidden');document.getElementById('result-score').textContent=`${c}/10`;if(c>=8){document.getElementById('result-emoji').textContent='\u{1F3C6}';document.getElementById('result-msg').textContent='API Integration master!'}else if(c>=5){document.getElementById('result-emoji').textContent='\u{1F44D}';document.getElementById('result-msg').textContent='Good work! Try the API playground again.'}else{document.getElementById('result-emoji').textContent='\u{1F4DA}';document.getElementById('result-msg').textContent='Review the provider docs above.'}}
+    function retakeQuiz(){submitted=false;currentQ=0;answers=new Array(10).fill(-1);document.getElementById('quiz-container').classList.remove('hidden');document.getElementById('prev-btn').classList.remove('hidden');document.getElementById('next-btn').classList.remove('hidden');document.getElementById('q-current').parentElement.classList.remove('hidden');document.getElementById('quiz-result').classList.add('hidden');renderQuiz()}
+    renderQuiz();
+    </script>
+</body>
+</html>
