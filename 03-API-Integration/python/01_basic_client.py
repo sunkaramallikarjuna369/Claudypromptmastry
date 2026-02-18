@@ -1,6 +1,6 @@
 """
-Claude Opus 4 - Basic API Client
-=================================
+Claude Opus 4.6 - Basic API Client
+===================================
 Three ways to connect: Anthropic Direct, AWS Bedrock, Google Vertex AI.
 
 Usage:
@@ -17,7 +17,7 @@ load_dotenv()
 
 
 def anthropic_direct(prompt: str, system: str = "") -> str:
-    """Call Claude Opus 4 via the Anthropic direct API."""
+    """Call Claude Opus 4.6 via the Anthropic direct API."""
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
     message = client.messages.create(
@@ -30,7 +30,7 @@ def anthropic_direct(prompt: str, system: str = "") -> str:
 
 
 def bedrock_client(prompt: str, system: str = "") -> str:
-    """Call Claude Opus 4 via AWS Bedrock."""
+    """Call Claude Opus 4.6 via AWS Bedrock."""
     import boto3
     import json
 
@@ -53,7 +53,7 @@ def bedrock_client(prompt: str, system: str = "") -> str:
 
 
 def vertex_client(prompt: str, system: str = "", project_id: str = "") -> str:
-    """Call Claude Opus 4 via Google Vertex AI."""
+    """Call Claude Opus 4.6 via Google Vertex AI."""
     from anthropic import AnthropicVertex
 
     client = AnthropicVertex(

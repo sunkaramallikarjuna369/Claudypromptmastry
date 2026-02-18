@@ -1,6 +1,6 @@
 """
-Claude Opus 4 - ETL Pipeline Generator
-========================================
+Claude Opus 4.6 - ETL Pipeline Generator
+==========================================
 Use Claude to generate production-ready ETL pipelines with structured output.
 
 Usage:
@@ -69,7 +69,7 @@ def generate_etl_pipeline(description: str) -> dict:
 
 
 def generate_pandas_cleaning_script(schema_description: str) -> str:
-    """Generate a Pandas data cleaning script using Claude Opus 4."""
+    """Generate a Pandas data cleaning script using Claude Opus 4.6."""
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
     prompt = f"""Generate a complete, runnable Python script using Pandas that:
@@ -129,7 +129,7 @@ if __name__ == "__main__":
         "partitioned by order_date and clustered by product_category."
     )
 
-    print("=== Claude Opus 4 ETL Generator ===\n")
+    print("=== Claude Opus 4.6 ETL Generator ===\n")
     print(f"Generating pipeline for: {pipeline_desc[:80]}...\n")
 
     pipeline = generate_etl_pipeline(pipeline_desc)

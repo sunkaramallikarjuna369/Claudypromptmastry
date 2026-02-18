@@ -1,6 +1,6 @@
 """
-Claude Opus 4 - Tool Calling (Function Calling)
-=================================================
+Claude Opus 4.6 - Tool Calling (Function Calling)
+===================================================
 Define tools Claude can invoke to interact with databases, APIs, and files.
 
 Usage:
@@ -212,6 +212,6 @@ if __name__ == "__main__":
         "Run null checks and duplicate checks, then write a summary report."
     )
 
-    print("=== Claude Opus 4 Tool Calling ===\n")
+    print("=== Claude Opus 4.6 Tool Calling ===\n")
     final = run_with_tools(user_prompt, system=system_prompt)
     print(f"\n--- Final Response ---\n{final}")

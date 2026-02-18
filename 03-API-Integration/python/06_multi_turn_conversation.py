@@ -1,6 +1,6 @@
 """
-Claude Opus 4 - Multi-Turn Conversation for Data Engineering
-==============================================================
+Claude Opus 4.6 - Multi-Turn Conversation for Data Engineering
+================================================================
 Build conversational data engineering assistants with context memory.
 
 Usage:
@@ -14,7 +14,7 @@ import anthropic
 
 load_dotenv()
 
-SYSTEM_PROMPT = """You are a data engineering assistant powered by Claude Opus 4.
+SYSTEM_PROMPT = """You are a data engineering assistant powered by Claude Opus 4.6.
 You help users with:
 - Writing SQL queries (BigQuery, PostgreSQL, Snowflake)
 - Building ETL pipelines (Spark, Pandas, Dataflow)
@@ -89,7 +89,7 @@ if __name__ == "__main__":
         "What data quality tests should I add for these models?",
     ]
 
-    print("=== Claude Opus 4 Multi-Turn Assistant ===\n")
+    print("=== Claude Opus 4.6 Multi-Turn Assistant ===\n")
 
     for i, msg in enumerate(conversation, 1):
         print(f"[Turn {i}] User: {msg[:80]}...")

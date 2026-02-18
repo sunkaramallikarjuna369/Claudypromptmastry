@@ -1,6 +1,6 @@
 """
-Claude Opus 4 - Batch Processing for Data Engineering
-=======================================================
+Claude Opus 4.6 - Batch Processing for Data Engineering
+=========================================================
 Process multiple prompts efficiently using the Anthropic Batch API.
 
 Usage:
@@ -124,7 +124,7 @@ def run_batch_api(tasks: list[dict]) -> str:
 
 
 if __name__ == "__main__":
-    print("=== Claude Opus 4 Batch Processing ===\n")
+    print("=== Claude Opus 4.6 Batch Processing ===\n")
     print(f"Tasks to process: {len(BATCH_TASKS)}")
     for task in BATCH_TASKS:
         print(f"  - {task['id']}: {task['prompt'][:60]}...")

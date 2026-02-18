@@ -1,6 +1,6 @@
 """
-Claude Opus 4 - Vision for Data Engineering
-=============================================
+Claude Opus 4.6 - Vision for Data Engineering
+===============================================
 Use Claude's vision capabilities to analyze charts, diagrams, and screenshots
 of data pipeline dashboards.
 
@@ -105,7 +105,7 @@ def analyze_pipeline_dashboard(image_path: str) -> str:
 
 
 if __name__ == "__main__":
-    print("=== Claude Opus 4 Vision for Data Engineering ===\n")
+    print("=== Claude Opus 4.6 Vision for Data Engineering ===\n")
     print("Available functions:")
     print("  analyze_image_from_file(path, prompt) - Analyze local images")
     print("  analyze_image_from_url(url, prompt)   - Analyze images from URL")

@@ -1,6 +1,6 @@
 """
-Claude Opus 4 - Agentic Data Engineering Workflow
-===================================================
+Claude Opus 4.6 - Agentic Data Engineering Workflow
+=====================================================
 Multi-step agent that plans, executes, validates, and reports on data tasks.
 
 Usage:
@@ -16,7 +16,7 @@ import anthropic
 
 load_dotenv()
 
-AGENT_SYSTEM = """You are a Data Engineering Agent powered by Claude Opus 4.
+AGENT_SYSTEM = """You are a Data Engineering Agent powered by Claude Opus 4.6.
 You operate in a PLAN-EXECUTE-VALIDATE-REPORT cycle.
 
 Available tools:
@@ -223,5 +223,5 @@ if __name__ == "__main__":
         "4. If any issues found, send a Slack alert"
     )
 
-    print("=== Claude Opus 4 Agentic Workflow ===\n")
+    print("=== Claude Opus 4.6 Agentic Workflow ===\n")
     run_agent(task)

@@ -1,6 +1,6 @@
 """
-Claude Opus 4 - Streaming Responses
-=====================================
+Claude Opus 4.6 - Streaming Responses
+=======================================
 Stream tokens as they arrive for real-time UX in data pipelines.
 
 Usage:
@@ -16,7 +16,7 @@ load_dotenv()
 
 
 def stream_response(prompt: str, system: str = "") -> str:
-    """Stream a Claude Opus 4 response token by token."""
+    """Stream a Claude Opus 4.6 response token by token."""
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
     collected = []
@@ -73,7 +73,7 @@ if __name__ == "__main__":
         "deduplicates on event_id, and writes to BigQuery."
     )
 
-    print("=== Streaming Claude Opus 4 ===\n")
+    print("=== Streaming Claude Opus 4.6 ===\n")
     result = stream_with_metadata(user_prompt, system=system_prompt)
     print(
         f"\n--- Usage: {result['input_tokens']} in / {result['output_tokens']} out ---"
